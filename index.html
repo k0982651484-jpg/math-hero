@@ -188,7 +188,7 @@ function clock(h,m){
   s+='<line x1="100" y1="100" x2="'+(100+76*Math.sin(ma)).toFixed(1)+'" y2="'+(100-76*Math.cos(ma)).toFixed(1)+'" stroke="#2f6fed" stroke-width="5" stroke-linecap="round"/>';
   return s+'<circle cx="100" cy="100" r="6" fill="#333"/></svg>';
 }
-const N=o=>Object.assign({type:'num',unit:'',vis:'',expr:'',say:''},o);
+const N=o=>{o=Object.assign({type:'num',unit:'',vis:'',expr:'',say:''},o);if(o.unit&&o.expr){const p=o.expr.split('{}');if(p[1]&&p[1].trim().indexOf(o.unit)===0)o.unit='';}return o;};
 const C=o=>Object.assign({type:'choice',vis:'',expr:'',say:''},o);
 function mkChoices(correct,cands,k){
   const u=[...new Set(cands.filter(x=>x!==correct))];
@@ -1040,6 +1040,395 @@ function gWord4(lv){
   const c=ri(6,12),q=ri(15,45),b=ri(120,300);return story4('book',b+c*q,b,c);
 }
 
+/* ---------- grades 5-6: helpers ---------- */
+const gcd=(a,b)=>b?gcd(b,a%b):a,lcm=(a,b)=>a/gcd(a,b)*b;
+const fval=(n,d)=>{const g=gcd(n,d);return (n/g)+'/'+(d/g);};
+const fstr=(n,d)=>{const g=gcd(n,d);n/=g;d/=g;if(d===1)return String(n);if(n>d){const w=Math.floor(n/d),r=n%d;return mx(w,r,d);}return fr(n,d);};
+const ds=(R,k)=>{let s=String(R);if(k<=0)return s;while(s.length<=k)s='0'+s;s=s.slice(0,-k)+'.'+s.slice(-k);return s.replace(/(\.\d*?)0+$/,'$1').replace(/\.$/,'');};
+const nz10=(a,b)=>{let x;do{x=ri(a,b);}while(x%10===0);return x;};
+function fchoice(cn,cd,wr){
+  const seen={},out=[[cn,cd]];seen[fval(cn,cd)]=1;
+  const add=p=>{if(out.length>=4||p[0]<=0||p[1]<=0||p[1]>300||p[0]>3000)return;const k=fval(p[0],p[1]);if(seen[k])return;seen[k]=1;out.push(p);};
+  wr.forEach(add);
+  [[cn+1,cd],[cn,cd+1],[cn+2,cd],[cn,cd+2],[cn+1,cd+1],[cn*2+1,cd],[cn+3,cd],[cn,cd+3]].forEach(add);
+  return{choices:shuf(out.map(p=>fstr(p[0],p[1]))),ans:fstr(cn,cd)};
+}
+function fQ(say,expr,cn,cd,wr,steps,vis){
+  const c=fchoice(cn,cd,wr);
+  return C({say,expr,html:1,choices:c.choices,ans:c.ans,ex:{steps,vis:vis||''}});
+}
+const facs=n=>{const a=[];for(let i=1;i<=n;i++)if(n%i===0)a.push(i);return a;};
+const isPrime=n=>n>1&&facs(n).length===2;
+function paraSvg(b,h){
+  const bw=150,hh=Math.max(46,Math.min(90,Math.round(150*h/b))),s=36,x=30,y=12;
+  return '<svg viewBox="0 0 260 '+(hh+50)+'" class="shp"><polygon points="'+(x+s)+','+y+' '+(x+s+bw)+','+y+' '+(x+bw)+','+(y+hh)+' '+x+','+(y+hh)+'" fill="#ffe8a3" stroke="#444" stroke-width="3"/><line x1="'+(x+s)+'" y1="'+y+'" x2="'+(x+s)+'" y2="'+(y+hh)+'" stroke="#e4572e" stroke-width="3" stroke-dasharray="6 4"/>'+svgT(x+bw/2,y+hh+26,b)+svgT(x+s+6,y+hh/2+6,h,'start')+'</svg>';
+}
+function triHSvg(b,h){
+  const bw=170,hh=Math.max(46,Math.min(90,Math.round(170*h/b))),x=30,y=12,ax=x+Math.round(bw*0.35);
+  return '<svg viewBox="0 0 250 '+(hh+50)+'" class="shp"><polygon points="'+ax+','+y+' '+(x+bw)+','+(y+hh)+' '+x+','+(y+hh)+'" fill="#ffe8a3" stroke="#444" stroke-width="3"/><line x1="'+ax+'" y1="'+y+'" x2="'+ax+'" y2="'+(y+hh)+'" stroke="#e4572e" stroke-width="3" stroke-dasharray="6 4"/>'+svgT(x+bw/2,y+hh+26,b)+svgT(ax+6,y+hh/2+6,h,'start')+'</svg>';
+}
+function trapSvg(a,c,h){
+  const bw=170,tw=Math.max(50,Math.round(bw*a/c)),hh=Math.max(46,Math.min(90,Math.round(130*h/c))),x=30,y=12,ox=x+Math.round((bw-tw)/2);
+  return '<svg viewBox="0 0 250 '+(hh+50)+'" class="shp"><polygon points="'+ox+','+y+' '+(ox+tw)+','+y+' '+(x+bw)+','+(y+hh)+' '+x+','+(y+hh)+'" fill="#ffe8a3" stroke="#444" stroke-width="3"/><line x1="'+ox+'" y1="'+y+'" x2="'+ox+'" y2="'+(y+hh)+'" stroke="#e4572e" stroke-width="3" stroke-dasharray="6 4"/>'+svgT(ox+tw/2,y-1,a)+svgT(x+bw/2,y+hh+26,c)+svgT(ox+6,y+hh/2+6,h,'start')+'</svg>';
+}
+function boxSvg(l,w,h){
+  const fw=130,fh=Math.max(40,Math.min(90,Math.round(130*h/l))),x=20,y=34,dx=40,dy=-24;
+  return '<svg viewBox="0 0 262 '+(fh+68)+'" class="shp"><polygon points="'+x+','+y+' '+(x+fw)+','+y+' '+(x+fw+dx)+','+(y+dy)+' '+(x+dx)+','+(y+dy)+'" fill="#fff3c4" stroke="#444" stroke-width="3"/><polygon points="'+(x+fw)+','+y+' '+(x+fw+dx)+','+(y+dy)+' '+(x+fw+dx)+','+(y+dy+fh)+' '+(x+fw)+','+(y+fh)+'" fill="#ffd97a" stroke="#444" stroke-width="3"/><rect x="'+x+'" y="'+y+'" width="'+fw+'" height="'+fh+'" fill="#ffe8a3" stroke="#444" stroke-width="3"/>'+svgT(x+fw/2,y+fh+24,l)+svgT(x-6,y+fh/2+6,h,'end')+svgT(x+fw+dx/2+14,y+dy/2+4,w,'start')+'</svg>';
+}
+function circSvg(lab,kind){
+  const cx=100,cy=70,r=56;
+  return '<svg viewBox="0 0 220 140" class="shp"><circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="#ffe8a3" stroke="#444" stroke-width="3"/>'+(kind==='d'?'<line x1="'+(cx-r)+'" y1="'+cy+'" x2="'+(cx+r)+'" y2="'+cy+'" stroke="#e4572e" stroke-width="3"/>'+svgT(cx,cy-8,lab):'<line x1="'+cx+'" y1="'+cy+'" x2="'+(cx+r)+'" y2="'+cy+'" stroke="#e4572e" stroke-width="3"/><circle cx="'+cx+'" cy="'+cy+'" r="3" fill="#444"/>'+svgT(cx+r/2,cy-8,lab))+'</svg>';
+}
+function cylSvg(r,h){
+  return '<svg viewBox="0 0 220 170" class="shp"><rect x="50" y="32" width="100" height="90" fill="#ffe8a3"/><ellipse cx="100" cy="122" rx="50" ry="16" fill="#ffe8a3" stroke="#444" stroke-width="3"/><rect x="50" y="32" width="100" height="90" fill="#ffe8a3"/><line x1="50" y1="32" x2="50" y2="122" stroke="#444" stroke-width="3"/><line x1="150" y1="32" x2="150" y2="122" stroke="#444" stroke-width="3"/><ellipse cx="100" cy="32" rx="50" ry="16" fill="#fff3c4" stroke="#444" stroke-width="3"/><line x1="100" y1="32" x2="150" y2="32" stroke="#e4572e" stroke-width="3"/>'+svgT(128,12,r)+svgT(44,82,h,'end')+'</svg>';
+}
+
+/* ---------- grade 5 generators ---------- */
+function gDmul5(lv){
+  const k=lv===1?pick(['a','a','s']):lv===2?pick(['b','b','c','q']):pick(['d','e','c','s']);
+  if(k==='s'){
+    const up=Math.random()<.6,m=pick([10,100,1000]),kb=pick([1,2]),B=kb===1?nz10(12,98):nz10(112,998),b=ds(B,kb),z=String(m).length-1;
+    if(up)return N({say:'小數點移一移',expr:b+' × '+m+' = {}',ans:ds(B*m,kb),dec:1,ev:b+'*'+m,ex:{steps:['乘以 '+m+'，小數點要向右移 '+z+' 位。',b+' 的小數點向右移 '+z+' 位（不夠就補 0），得到 <mark>'+ds(B*m,kb)+'</mark>。']}});
+    return N({say:'小數點移一移',expr:b+' ÷ '+m+' = {}',ans:ds(B,kb+z),dec:1,ev:b+'/'+m,ex:{steps:['除以 '+m+'，小數點要向左移 '+z+' 位。',b+' 的小數點向左移 '+z+' 位（不夠就補 0），得到 <mark>'+ds(B,kb+z)+'</mark>。']}});
+  }
+  if(k==='q'){
+    const A=nz10(21,99),a=ds(A,1),sm=Math.random()<.5,B=sm?pick([2,3,4,5,6,7,8,9]):pick([12,13,14,15,16,18]);
+    return C({say:'不用算，先判斷：',expr:a+' × '+ds(B,1)+' 的積，會比 '+a+'…',choices:['比 '+a+' 大','比 '+a+' 小','和 '+a+' 一樣大'],ans:sm?'比 '+a+' 小':'比 '+a+' 大',ex:{steps:[ds(B,1)+' '+(sm?'比 1 小':'比 1 大')+'。','一個數乘以'+(sm?'比 1 小的數，積會變小':'比 1 大的數，積會變大')+'。','所以積會 <mark>'+(sm?'比 '+a+' 小':'比 '+a+' 大')+'</mark>。']}});
+  }
+  let A,B,ka,kb;
+  if(k==='a'){A=nz10(11,59);B=ri(2,9);ka=1;kb=0;}
+  else if(k==='b'){A=ri(2,9);B=ri(2,9);ka=1;kb=1;}
+  else if(k==='c'){A=nz10(101,499);B=ri(2,8);ka=2;kb=0;}
+  else if(k==='d'){A=nz10(11,59);B=nz10(11,39);ka=1;kb=1;}
+  else{A=nz10(101,399);B=nz10(11,29);ka=2;kb=1;}
+  const R=A*B,kk=ka+kb,a=ds(A,ka),b=kb?ds(B,kb):String(B);
+  return N({say:'小數乘法',expr:a+' × '+b+' = {}',ans:ds(R,kk),dec:1,ev:a+'*'+b,ex:{steps:['先不管小數點，當成整數乘：'+A+' × '+B+' = '+R+'。',a+' 有 '+ka+' 位小數'+(kb?'，'+b+' 有 '+kb+' 位小數，合起來共 '+kk+' 位':'，所以積也要有 '+kk+' 位小數')+'。','從 '+R+' 的右邊數 '+kk+' 位點上小數點：<mark>'+ds(R,kk)+'</mark>。']}});
+}
+function gDdiv5(lv){
+  const k=lv===1?pick(['a','a','s']):lv===2?pick(['b','c','c']):pick(['d','e','b','c']);
+  if(k==='s'){const m=pick([10,100]),B=nz10(112,998),z=String(m).length-1;return N({say:'小數點移一移',expr:ds(B,2)+' ÷ '+m+' = {}',ans:ds(B,2+z),dec:1,ev:ds(B,2)+'/'+m,ex:{steps:['除以 '+m+'，小數點向左移 '+z+' 位。',ds(B,2)+' 的小數點向左移 '+z+' 位（不夠補 0），得到 <mark>'+ds(B,2+z)+'</mark>。']}});}
+  if(k==='a'){
+    let q,b,A;do{q=nz10(11,59);b=ri(2,9);A=q*b;}while(A%10===0);
+    return N({say:'小數除以整數',expr:ds(A,1)+' ÷ '+b+' = {}',ans:ds(q,1),dec:1,ev:ds(A,1)+'/'+b,ex:{steps:[ds(A,1)+' 是 '+A+' 個 0.1。',A+' ÷ '+b+' = '+q+'，就是 '+q+' 個 0.1。','所以商是 <mark>'+ds(q,1)+'</mark>。（商的小數點要和被除數的小數點對齊）']}});
+  }
+  if(k==='b'){
+    let b10,q,A;do{b10=ri(2,9);q=ri(2,30);A=q*b10;}while(A%10===0);
+    return N({say:'小數除以小數',expr:ds(A,1)+' ÷ '+ds(b10,1)+' = {}',ans:q,ev:q,ex:{steps:['除數 '+ds(b10,1)+' 要變成整數，同乘 10 變成 '+b10+'。','被除數也要同乘 10：'+ds(A,1)+' → '+A+'。','現在算 '+A+' ÷ '+b10+' = <mark>'+q+'</mark>。']}});
+  }
+  if(k==='c'){
+    const b=pick([2,4,5,8,20,25]),kk={2:1,4:2,5:1,8:3,20:2,25:2}[b],a=pick([3,5,7,9,11,13,15,17,19,21,23,27,29,31])+(Math.random()<.5?0:2);
+    const R=a*Math.pow(10,kk)/b;
+    return N({say:'整數除以整數，除不盡就補 0 繼續除',expr:a+' ÷ '+b+' = {}',ans:ds(R,kk),dec:1,ev:a+'/'+b,ex:{steps:[a+' ÷ '+b+' 先除到個位，有餘數時，在商的右邊點小數點。','把餘數後面補 0 繼續除，一直除到沒有餘數為止。','商是 <mark>'+ds(R,kk)+'</mark>。（驗算：'+ds(R,kk)+' × '+b+' = '+a+'）']}});
+  }
+  if(k==='d'){
+    let b10,q,A;do{b10=nz10(12,39);q=ri(3,30);A=q*b10;}while(A%10===0);
+    return N({say:'小數除以小數',expr:ds(A,1)+' ÷ '+ds(b10,1)+' = {}',ans:q,ev:q,ex:{steps:['除數 '+ds(b10,1)+' 同乘 10 變成 '+b10+'。','被除數 '+ds(A,1)+' 也同乘 10 變成 '+A+'。',A+' ÷ '+b10+' = <mark>'+q+'</mark>。']}});
+  }
+  let q,b,A;do{q=nz10(101,499);b=ri(2,9);A=q*b;}while(A%10===0);
+  return N({say:'小數除以整數',expr:ds(A,2)+' ÷ '+b+' = {}',ans:ds(q,2),dec:1,ev:ds(A,2)+'/'+b,ex:{steps:[ds(A,2)+' 是 '+A+' 個 0.01。',A+' ÷ '+b+' = '+q+'，就是 '+q+' 個 0.01。','商是 <mark>'+ds(q,2)+'</mark>。（驗算：'+ds(q,2)+' × '+b+' = '+ds(A,2)+'）']}});
+}
+function gFac5(lv){
+  const k=lv===1?pick(['a','b','c','c']):lv===2?pick(['g','l','g','l','c']):pick(['gw','lw','p','p2','g','l']);
+  if(k==='a'){
+    const n=pick([12,16,18,20,24,28,30,36]),f=facs(n);
+    return N({say:'因數有幾個？',expr:n+' 的因數共有 {} 個',ans:f.length,ev:f.length,ex:{steps:['能把 '+n+' 整除的數，都是它的因數。','成對找：'+f.filter(x=>x*x<=n).map(x=>'1×'.replace('1',x)+(n/x)).join('、')+'。','全部是 '+f.join('、')+'，共 <mark>'+f.length+'</mark> 個。']}});
+  }
+  if(k==='b'){
+    if(Math.random()<.5){const a=ri(3,9),m=ri(4,9);return N({say:'倍數',expr:a+' 的第 '+m+' 個倍數是 {}',ans:a*m,ev:a*m,ex:{steps:[a+' 的倍數：'+Array.from({length:m},(_,i)=>a*(i+1)).join('、')+'……','第 '+m+' 個是 '+a+' × '+m+' = <mark>'+a*m+'</mark>。']}});}
+    const a=ri(3,9),lim=pick([30,40,50,60]),c=Math.floor(lim/a);
+    return N({say:'倍數',expr:lim+' 以內（含 '+lim+'）'+a+' 的倍數有 {} 個',ans:c,ev:c,ex:{steps:[lim+' ÷ '+a+' = '+c+' …… '+(lim%a)+'。','所以 1 × '+a+' 到 '+c+' × '+a+'，共有 <mark>'+c+'</mark> 個倍數。']}});
+  }
+  if(k==='c'){
+    const m=pick([2,3,5,9]),mk={2:'2（個位是 0、2、4、6、8）',3:'3（各位數字和是 3 的倍數）',5:'5（個位是 0 或 5）',9:'9（各位數字和是 9 的倍數）'}[m];
+    let ok,bad=[];do{ok=ri(12,200);}while(ok%m!==0);
+    while(bad.length<3){const x=ri(12,200);if(x%m!==0&&bad.indexOf(x)<0)bad.push(x);}
+    return C({say:'哪一個是 '+m+' 的倍數？',choices:shuf([ok].concat(bad).map(String)),ans:String(ok),ex:{steps:['判斷 '+m+' 的倍數：'+mk+'。',ok+(m===3||m===9?'：'+String(ok).split('').join(' + ')+' = '+String(ok).split('').reduce((a,b)=>a+ +b,0)+'，是 '+m+' 的倍數。':'：符合規則。'),'答案是 <mark>'+ok+'</mark>。']}});
+  }
+  const pr=lv===2?[[12,18],[16,24],[18,24],[20,30],[24,36],[28,42],[30,45],[36,48],[18,27],[15,40],[8,12],[12,20]]:[[36,54],[48,72],[60,84],[45,75],[56,84],[42,63],[72,96],[54,90]];
+  const [a,b]=pick(pr),g=gcd(a,b),l=lcm(a,b);
+  if(k==='g'){
+    return N({say:'最大公因數',expr:a+' 和 '+b+' 的最大公因數是 {}',ans:g,ev:g,ex:{steps:[a+' 的因數：'+facs(a).join('、')+'。',b+' 的因數：'+facs(b).join('、')+'。','公因數：'+facs(g).join('、')+'，最大的是 <mark>'+g+'</mark>。']}});
+  }
+  if(k==='l'){
+    const x=pick([[4,6],[6,8],[6,9],[4,10],[8,12],[5,6],[3,8],[9,12],[10,15],[6,10]]),L=lcm(x[0],x[1]);
+    const mk=(n)=>Array.from({length:Math.min(8,L/n)},(_,i)=>n*(i+1)).join('、');
+    return N({say:'最小公倍數',expr:x[0]+' 和 '+x[1]+' 的最小公倍數是 {}',ans:L,ev:L,ex:{steps:[x[0]+' 的倍數：'+mk(x[0])+'……',x[1]+' 的倍數：'+mk(x[1])+'……','第一個一樣的數是 <mark>'+L+'</mark>。']}});
+  }
+  if(k==='gw'){
+    const t=pick([['彩帶','公分'],['繩子','公分'],['木條','公分']]);
+    return N({say:'把兩條'+t[0]+'，分別長 '+a+' '+t[1]+' 和 '+b+' '+t[1]+'，剪成一樣長、沒有剩下。',expr:'最長可以剪 {}',unit:t[1],ans:g,ev:g,ex:{steps:['要剛好剪完，每段長要同時是 '+a+' 和 '+b+' 的因數，也就是「公因數」。','要最長，就是「最大公因數」。',a+' 和 '+b+' 的最大公因數是 <mark>'+g+'</mark>。']}});
+  }
+  if(k==='lw'){
+    const x=pick([[6,8],[4,6],[6,9],[8,12],[10,15],[12,18],[9,12]]),L=lcm(x[0],x[1]);
+    return N({say:'甲車每 '+x[0]+' 分鐘發一班，乙車每 '+x[1]+' 分鐘發一班，兩種車剛好同時發車。',expr:'下一次同時發車，要再過 {}',unit:'分鐘',ans:L,ev:L,ex:{steps:['同時發車的時間，是 '+x[0]+' 和 '+x[1]+' 的公倍數。','要最快，就是「最小公倍數」。',x[0]+' 和 '+x[1]+' 的最小公倍數是 <mark>'+L+'</mark>，所以再過 '+L+' 分鐘。']}});
+  }
+  if(k==='p'){
+    const m=pick([20,30,40,50]),ps=Array.from({length:m},(_,i)=>i+1).filter(isPrime);
+    return N({say:'質數',expr:m+' 以內的質數有 {} 個',ans:ps.length,ev:ps.length,ex:{steps:['質數：只有 1 和它自己兩個因數。（1 不是質數）',m+' 以內的質數：'+ps.join('、')+'。','共 <mark>'+ps.length+'</mark> 個。']}});
+  }
+  let ok;do{ok=ri(11,59);}while(!isPrime(ok));
+  const bad=[];while(bad.length<3){const x=ri(11,59);if(!isPrime(x)&&bad.indexOf(x)<0)bad.push(x);}
+  return C({say:'哪一個是質數？',choices:shuf([ok].concat(bad).map(String)),ans:String(ok),ex:{steps:['質數只有 1 和自己兩個因數。','檢查：'+[ok].concat(bad).map(x=>x+' 的因數有 '+facs(x).join('、')).join('；')+'。','只有 <mark>'+ok+'</mark> 是質數。']}});
+}
+function gFadd5(lv){
+  const pairs=lv<3?[[2,4],[2,6],[3,6],[2,8],[4,8],[3,9],[5,10],[2,3],[2,5],[3,4],[3,5],[4,5],[2,7],[3,7],[4,6],[6,9]]:[[2,3],[3,4],[4,6],[6,8],[3,5],[4,5],[5,6],[6,9],[5,8],[3,8],[2,5],[4,9],[5,7],[2,9],[6,10],[4,10]];
+  const [d1,d2]=shuf(pick(pairs)),L=lcm(d1,d2);
+  if(lv===1){
+    const n=ri(1,d1-1);
+    if(Math.random()<.5)return N({say:'通分：把 '+fr(n,d1)+' 和 '+fr(ri(1,d2-1),d2)+' 的分母，都變成 '+L,expr:fr(n,d1)+' = '+fr('{}',L),ans:n*L/d1,ev:n*L/d1,ex:{steps:['分母從 '+d1+' 變成 '+L+'，乘了 '+L/d1+'。','分子也要乘 '+L/d1+'：'+n+' × '+L/d1+' = <mark>'+n*L/d1+'</mark>。'],vis:fbar(n,d1)+fbar(n*L/d1,L)}});
+    const n2=ri(1,d2-1);
+    return N({say:'通分：先找兩個分母的最小公倍數',expr:fr(n,d1)+'、'+fr(n2,d2)+' 的公分母（最小的）是 {}',ans:L,ev:L,ex:{steps:[d1+' 和 '+d2+' 的最小公倍數就是最小的公分母。',d1+' 的倍數：'+Array.from({length:Math.min(8,L/d1)},(_,i)=>d1*(i+1)).join('、')+'……',d2+' 的倍數：'+Array.from({length:Math.min(8,L/d2)},(_,i)=>d2*(i+1)).join('、')+'……','最小公倍數是 <mark>'+L+'</mark>。']}});
+  }
+  const plus=Math.random()<.55;let n1=ri(1,d1-1),n2=ri(1,d2-1);
+  if(!plus){let t=0;while(n1*L/d1<=n2*L/d2&&t++<50){n1=ri(1,d1-1);n2=ri(1,d2-1);}if(n1*L/d1<=n2*L/d2){n1=d1-1;n2=1;}}
+  const a=n1*L/d1,b=n2*L/d2,r=plus?a+b:a-b;
+  const st=['找公分母：'+d1+' 和 '+d2+' 的最小公倍數是 '+L+'。','通分：'+fr(n1,d1)+' = '+fr(a,L)+'，'+fr(n2,d2)+' = '+fr(b,L)+'。',fr(a,L)+(plus?' + ':' − ')+fr(b,L)+' = '+fr(r,L)+'。'];
+  if(lv===2)return N({say:'異分母分數'+(plus?'加法':'減法')+'（分母先通成 '+L+'）',expr:fr(n1,d1)+(plus?' + ':' − ')+fr(n2,d2)+' = '+fr('{}',L),ans:r,ev:r,ex:{steps:st.concat(['分子是 <mark>'+r+'</mark>。（還可以約分：'+fstr(r,L)+'）']),vis:fbar(a,L)+fbar(b,L)}});
+  const wr=[[n1+n2,d1+d2],[n1+n2,L],[Math.abs(n1-n2),L],[r,L*2]];
+  if(Math.random()<.4){
+    const w1=ri(1,3),w2=plus?ri(1,3):ri(1,w1),A=w1*L+a,B=w2*L+b;
+    if(!plus&&A<=B)return gFadd5(lv);
+    const R=plus?A+B:A-B;
+    return fQ('帶分數'+(plus?'加法':'減法')+'（答案要最簡）',mx(w1,n1,d1)+(plus?' + ':' − ')+mx(w2,n2,d2)+' = ?',R,L,[[(plus?w1+w2:w1-w2)*L+n1+n2,L],[R+1,L],[R-L,L]],['通分後：'+mx(w1,n1,d1)+' = '+fr(A,L)+'，'+mx(w2,n2,d2)+' = '+fr(B,L)+'。',fr(A,L)+(plus?' + ':' − ')+fr(B,L)+' = '+fr(R,L)+'。','約分、化成帶分數：'+fstr(R,L)+'。']);
+  }
+  return fQ('異分母分數'+(plus?'加法':'減法')+'（答案要最簡）',fr(n1,d1)+(plus?' + ':' − ')+fr(n2,d2)+' = ?',r,L,wr,st.concat(['約分，答案是 '+fstr(r,L)+'。']),fbar(a,L)+fbar(b,L));
+}
+function gFmul5(lv){
+  const k=lv===1?pick(['a','a','b','c']):lv===2?pick(['d','d','e','f','c']):pick(['g','h','f','d','e']);
+  if(k==='a'){
+    const g=ri(2,6),pq=pick([[1,2],[1,3],[2,3],[3,4],[2,5],[3,5],[3,7],[5,6],[4,5],[5,8],[3,8]]),n=pq[0]*g,d=pq[1]*g;
+    return N({say:'約分成最簡分數',expr:fr(n,d)+' = '+fr('{}',pq[1]),ans:pq[0],ev:pq[0],ex:{steps:[n+' 和 '+d+' 的最大公因數是 '+g+'。','分子分母同除以 '+g+'：'+n+' ÷ '+g+' = <mark>'+pq[0]+'</mark>，'+d+' ÷ '+g+' = '+pq[1]+'。']}});
+  }
+  if(k==='b'){
+    const d=ri(3,9),n=ri(1,d+4);
+    return N({say:'分數與除法',expr:n+' ÷ '+d+' = '+fr('{}',d),ans:n,ev:n,ex:{steps:[n+' ÷ '+d+'：把 '+n+' 平分成 '+d+' 份，每份是 '+fr(n,d)+'。','所以 '+n+' ÷ '+d+' = '+fr('<mark>'+n+'</mark>',d)+'。']}});
+  }
+  if(k==='c'){
+    const d=pick([2,4,5,8,10,20,25]),n=ri(1,d-1),kk={2:1,4:2,5:1,8:3,10:1,20:2,25:2}[d],R=n*Math.pow(10,kk)/d;
+    return N({say:'分數化成小數',expr:fr(n,d)+' = {}',ans:ds(R,kk),dec:1,ev:n+'/'+d,ex:{steps:['分數就是除法：'+n+' ÷ '+d+'。',n+' ÷ '+d+' = <mark>'+ds(R,kk)+'</mark>。']}});
+  }
+  if(k==='d'){
+    const d=ri(3,12),n=ri(1,d-1),m=ri(2,6);
+    return fQ('分數乘整數（答案要最簡）',fr(n,d)+' × '+m+' = ?',n*m,d,[[n+m,d],[n*m,d*m],[n,d*m]],[fr(n,d)+' × '+m+'：分母不變，分子乘 '+m+'。',n+' × '+m+' = '+n*m+'，得 '+fr(n*m,d)+'。','約分、化成帶分數：'+fstr(n*m,d)+'。']);
+  }
+  if(k==='e'){
+    const d=pick([2,4,5,8,10,20,25]),n=ri(1,d-1),kk={2:1,4:2,5:1,8:3,10:1,20:2,25:2}[d],R=n*Math.pow(10,kk)/d;
+    return fQ('小數化成分數（最簡）','0.'+String(R).padStart(kk,'0')+' = ?',n,d,[[R,Math.pow(10,kk)*1],[R+1,Math.pow(10,kk)],[n,d+1]],['0.'+String(R).padStart(kk,'0')+' 有 '+kk+' 位小數，分母是 '+Math.pow(10,kk)+'。','寫成 '+fr(R,Math.pow(10,kk))+'。','約分：'+fstr(n,d)+'。']);
+  }
+  if(k==='f'){
+    const d1=ri(3,9);let d2;do{d2=ri(3,9);}while(d2===d1);
+    let n1=ri(1,d1-1),n2=ri(1,d2-1);while(n1*d2===n2*d1){n1=ri(1,d1-1);n2=ri(1,d2-1);}
+    const big=Math.random()<.6,L=d1*d2,a=n1*d2,b=n2*d1,w=(a>b)===big?[n1,d1]:[n2,d2];
+    return C({say:big?'哪一個分數比較大？':'哪一個分數比較小？',html:1,choices:shuf([fr(n1,d1),fr(n2,d2)]),ans:fr(w[0],w[1]),ex:{steps:['通分成分母 '+L+'：'+fr(n1,d1)+' = '+fr(a,L)+'，'+fr(n2,d2)+' = '+fr(b,L)+'。','比分子：'+a+' 和 '+b+'。','所以'+(big?'較大':'較小')+'的是 '+fr('<mark>'+w[0]+'</mark>',w[1])+'。']}});
+  }
+  if(k==='g'){
+    const d=ri(3,9),n=ri(1,d-1),w=ri(1,4),m=ri(2,5),A=w*d+n;
+    return fQ('帶分數乘整數（答案要最簡）',mx(w,n,d)+' × '+m+' = ?',A*m,d,[[w*m+n*m,d],[w*m*d+n,d],[A*m,d*m]],['先化成假分數：'+mx(w,n,d)+' = '+fr(A,d)+'。',fr(A,d)+' × '+m+' = '+fr(A*m,d)+'。','約分、化成帶分數：'+fstr(A*m,d)+'。']);
+  }
+  const d=pick([3,4,5,6,8]),n=ri(1,d-1),m=ri(2,6),it=pick([['一桶油有','公升'],['一條緞帶長','公尺'],['一包糖重','公斤']]);
+  return fQ(it[0]+' '+fr(n,d)+' '+it[1]+'，',m+' 個一樣的，共有多少'+it[1]+'？',n*m,d,[[n+m,d],[n*m,d*m]],['共有 '+m+' 個 '+fr(n,d)+'，列式：'+fr(n,d)+' × '+m+'。',fr(n,d)+' × '+m+' = '+fr(n*m,d)+'。','化成最簡：'+fstr(n*m,d)+' '+it[1]+'。']);
+}
+function gArea5(lv){
+  const k=lv===1?pick(['p','t','p','t']):lv===2?pick(['z','z','t','p','b']):pick(['ph','th','zh','u','c']);
+  const u2=pick(['平方公分','平方公尺']);
+  if(k==='p'){const b=ri(4,15),h=ri(3,12);return N({say:'平行四邊形的面積是多少？（單位：'+u2+'）',vis:paraSvg(b,h),expr:'面積 = {}',unit:u2,ans:b*h,ev:b*h,ex:{steps:['平行四邊形面積 = 底 × 高。','底 '+b+'，高 '+h+'（高是垂直的虛線，不是斜邊）。',b+' × '+h+' = <mark>'+b*h+'</mark>。']}});}
+  if(k==='t'){let b=ri(4,16),h=ri(3,12);if(b%2&&h%2)b++;return N({say:'三角形的面積是多少？（單位：'+u2+'）',vis:triHSvg(b,h),expr:'面積 = {}',unit:u2,ans:b*h/2,ev:b*h/2,ex:{steps:['三角形面積 = 底 × 高 ÷ 2。',b+' × '+h+' = '+b*h+'，再 ÷ 2。',b*h+' ÷ 2 = <mark>'+b*h/2+'</mark>。']}});}
+  if(k==='z'){let a=ri(3,10),c=ri(a+2,a+9),h=ri(3,10);if((a+c)%2&&h%2)h++;return N({say:'梯形的面積是多少？（單位：'+u2+'）',vis:trapSvg(a,c,h),expr:'面積 = {}',unit:u2,ans:(a+c)*h/2,ev:(a+c)*h/2,ex:{steps:['梯形面積 = （上底 + 下底）× 高 ÷ 2。','上底 '+a+'，下底 '+c+'，高 '+h+'。','（'+a+' + '+c+'）× '+h+' ÷ 2 = '+(a+c)+' × '+h+' ÷ 2 = <mark>'+(a+c)*h/2+'</mark>。']}});}
+  if(k==='b'){
+    const [fr1,t]=pick([['平行四邊形','底 × 高'],['三角形','底 × 高 ÷ 2'],['梯形','（上底 + 下底）× 高 ÷ 2']]);
+    return C({say:'哪一個是'+fr1+'的面積公式？',choices:shuf(['底 × 高','底 × 高 ÷ 2','（上底 + 下底）× 高 ÷ 2']),ans:t,ex:{steps:['平行四邊形：底 × 高。','三角形：底 × 高 ÷ 2（是平行四邊形的一半）。','梯形：（上底 + 下底）× 高 ÷ 2。','所以'+fr1+'是 <mark>'+t+'</mark>。']}});
+  }
+  if(k==='ph'){const b=ri(4,12),h=ri(3,12),A=b*h;return N({say:'平行四邊形的面積是 '+A+' 平方公分，底是 '+b+' 公分。',expr:'高是 {}',unit:'公分',ans:h,ev:h,ex:{steps:['面積 = 底 × 高，所以 高 = 面積 ÷ 底。',A+' ÷ '+b+' = <mark>'+h+'</mark>。']}});}
+  if(k==='th'){let b=ri(4,14)*2,h=ri(3,10);const A=b*h/2;return N({say:'三角形的面積是 '+A+' 平方公分，底是 '+b+' 公分。',expr:'高是 {}',unit:'公分',ans:h,ev:h,ex:{steps:['面積 = 底 × 高 ÷ 2，所以 底 × 高 = 面積 × 2。',A+' × 2 = '+A*2+'，高 = '+A*2+' ÷ '+b+' = <mark>'+h+'</mark>。']}});}
+  if(k==='zh'){const a=ri(4,10),c=ri(a+2,a+8),h=2*ri(2,6),A=(a+c)*h/2;return N({say:'梯形面積 '+A+' 平方公分，上底 '+a+' 公分，下底 '+c+' 公分。',expr:'高是 {}',unit:'公分',ans:h,ev:h,ex:{steps:['（上底 + 下底）× 高 ÷ 2 = 面積。',a+' + '+c+' = '+(a+c)+'，面積 × 2 = '+A*2+'。','高 = '+A*2+' ÷ '+(a+c)+' = <mark>'+h+'</mark>。']}});}
+  if(k==='u'){
+    const t=pick(['aa','ab','hh']);
+    if(t==='aa'){const m=ri(2,9);return N({say:'面積單位換算',expr:m+' 平方公尺 = {} 平方公分',ans:m*10000,ev:m*10000,ex:{steps:['1 公尺 = 100 公分，所以 1 平方公尺 = 100 × 100 = 10000 平方公分。',m+' × 10000 = <mark>'+m*10000+'</mark>。']}});}
+    if(t==='ab'){const m=ri(2,9);return N({say:'面積單位換算',expr:m+' 公頃 = {} 平方公尺',ans:m*10000,ev:m*10000,ex:{steps:['1 公頃 = 10000 平方公尺（邊長 100 公尺的正方形）。',m+' × 10000 = <mark>'+m*10000+'</mark>。']}});}
+    const m=ri(2,9);return N({say:'面積單位換算',expr:m+' 公畝 = {} 平方公尺',ans:m*100,ev:m*100,ex:{steps:['1 公畝 = 100 平方公尺（邊長 10 公尺的正方形）。',m+' × 100 = <mark>'+m*100+'</mark>。']}});
+  }
+  const w=ri(6,14),hh=ri(4,10),t=2*ri(2,5),a=w*hh+w*t/2;
+  return N({say:'上面是長方形，上面加了一個三角形（長方形長 '+w+'，寬 '+hh+'，三角形底 '+w+'，高 '+t+'）。',expr:'全部圖形的面積是 {} 平方公分',ans:a,ev:a,ex:{steps:['長方形：'+w+' × '+hh+' = '+w*hh+'。','三角形：'+w+' × '+t+' ÷ 2 = '+w*t/2+'。',w*hh+' + '+w*t/2+' = <mark>'+a+'</mark>。']}});
+}
+function gVol5(lv){
+  const k=lv===1?pick(['a','a','b']):lv===2?pick(['a','c','d','b']):pick(['e','f','c','d']);
+  if(k==='a'){const l=ri(3,12),w=ri(2,9),h=ri(2,9);return N({say:'長方體的體積是多少？（單位：立方公分）',vis:boxSvg(l,w,h),expr:'體積 = {}',unit:'立方公分',ans:l*w*h,ev:l*w*h,ex:{steps:['體積 = 長 × 寬 × 高。',l+' × '+w+' × '+h+'：先算 '+l+' × '+w+' = '+l*w+'，',l*w+' × '+h+' = <mark>'+l*w*h+'</mark>。']}});}
+  if(k==='b'){const a=ri(2,9);return N({say:'正方體的邊長是 '+a+' 公分',expr:'體積 = {} 立方公分',vis:boxSvg(a,a,a),ans:a*a*a,ev:a*a*a,ex:{steps:['正方體的長、寬、高都一樣，體積 = 邊長 × 邊長 × 邊長。',a+' × '+a+' × '+a+' = '+a*a+' × '+a+' = <mark>'+a*a*a+'</mark>。']}});}
+  if(k==='c'){const l=pick([10,20,25,50,40]),w=pick([10,20,25,40,50]),h=pick([10,20,25,50,30]),v=l*w*h;if(v%1000)return gVol5(lv);return N({say:'一個長 '+l+' 公分、寬 '+w+' 公分、高 '+h+' 公分的水箱，',expr:'最多可以裝 {} 公升的水',ans:v/1000,ev:v/1000,ex:{steps:['體積 = '+l+' × '+w+' × '+h+' = '+v+' 立方公分。','1 公升 = 1000 立方公分（= 1000 毫升）。',v+' ÷ 1000 = <mark>'+v/1000+'</mark> 公升。']}});}
+  if(k==='d'){const l=ri(3,12),w=ri(3,9),h=ri(2,9),v=l*w*h;return N({say:'長方體的體積是 '+v+' 立方公分，長 '+l+' 公分，寬 '+w+' 公分。',expr:'高是 {} 公分',ans:h,ev:h,ex:{steps:['底面積 = '+l+' × '+w+' = '+l*w+'。','體積 = 底面積 × 高，所以 高 = '+v+' ÷ '+l*w+' = <mark>'+h+'</mark>。']}});}
+  if(k==='e'){const l=pick([20,25,30,40,50]),w=pick([10,20,25,30,40]),m=ri(2,8),v=l*w*m;return N({say:'水箱的底面長 '+l+' 公分，寬 '+w+' 公分，裡面有 '+v+' 立方公分的水。',expr:'水深是 {} 公分',ans:m,ev:m,ex:{steps:['底面積 = '+l+' × '+w+' = '+l*w+' 平方公分。','水深 = 水的體積 ÷ 底面積 = '+v+' ÷ '+l*w+' = <mark>'+m+'</mark>。']}});}
+  if(k==='f'){const l=pick([10,20,25,30]),w=pick([10,20,30,40]),h=pick([2,3,4,5,6]),m=ri(2,6),v=l*w*h;if(v%1000)return gVol5(lv);return N({say:'把一個石頭放進長 '+l+'、寬 '+w+' 公分的水箱，水面升高了 '+h+' 公分。',expr:'石頭的體積是 {} 立方公分',ans:v,ev:v,ex:{steps:['水面升高的部分，體積就是石頭的體積。','升高部分：'+l+' × '+w+' × '+h+' = '+l*w+' × '+h+' = <mark>'+v+'</mark>。']}});}
+}
+function gPoly5(lv){
+  const k=lv===1?pick(['t','t','q']):lv===2?pick(['q','p','r','t']):pick(['p','r','r','d','e']);
+  if(k==='t'){const a=ri(30,90),b=ri(30,120-0);if(a+b>=175)return gPoly5(lv);return N({say:'三角形的兩個角是 '+a+' 度和 '+b+' 度',expr:'第三個角是 {} 度',ans:180-a-b,ev:180-a-b,ex:{steps:['三角形的內角和是 180 度。',a+' + '+b+' = '+(a+b)+'。','180 − '+(a+b)+' = <mark>'+(180-a-b)+'</mark>。']}});}
+  if(k==='q'){const a=ri(60,120),b=ri(60,120),c=ri(50,110),d=360-a-b-c;if(d<=20)return gPoly5(lv);return N({say:'四邊形的三個角是 '+a+'、'+b+'、'+c+' 度',expr:'第四個角是 {} 度',ans:d,ev:d,ex:{steps:['四邊形的內角和是 360 度（可以分成 2 個三角形：2 × 180）。',a+' + '+b+' + '+c+' = '+(a+b+c)+'。','360 − '+(a+b+c)+' = <mark>'+d+'</mark>。']}});}
+  if(k==='p'){const n=ri(5,10);return N({say:'多邊形的內角和',expr:n+' 邊形的內角和是 {} 度',ans:(n-2)*180,ev:(n-2)*180,ex:{steps:['從一個頂點畫對角線，可以把 '+n+' 邊形分成 '+(n-2)+' 個三角形。',(n-2)+' × 180 = <mark>'+(n-2)*180+'</mark> 度。']}});}
+  if(k==='r'){const n=pick([3,4,5,6,8,9,10,12]),v=(n-2)*180/n;return N({say:'正 '+n+' 邊形（每個內角都一樣大）',expr:'每個內角是 {} 度',ans:v,ev:v,ex:{steps:[n+' 邊形的內角和是 '+(n-2)+' × 180 = '+(n-2)*180+' 度。','共有 '+n+' 個一樣大的角：'+(n-2)*180+' ÷ '+n+' = <mark>'+v+'</mark> 度。']}});}
+  if(k==='d'){const n=ri(5,12),v=n*(n-3)/2;return N({say:'對角線',expr:n+' 邊形一共有 {} 條對角線',ans:v,ev:v,ex:{steps:['每個頂點可以連到 '+n+' − 3 = '+(n-3)+' 個不相鄰的頂點。','共 '+n+' × '+(n-3)+' = '+n*(n-3)+'，但每條線算了 2 次，要 ÷ 2。',n*(n-3)+' ÷ 2 = <mark>'+v+'</mark>。']}});}
+  const n=pick([6,8,9,10,12]),ex=360/n;
+  return N({say:'正 '+n+' 邊形，每個內角是 '+(180-ex)+' 度',expr:'每個外角是 {} 度',ans:ex,ev:ex,ex:{steps:['內角 + 外角 = 180 度（排成一直線）。','180 − '+(180-ex)+' = <mark>'+ex+'</mark> 度。']}});
+}
+function gAvg5(lv){
+  const k=lv===1?pick(['a','a','b']):lv===2?pick(['a','b','c']):pick(['c','d','e']);
+  const mkList=(n,lo,hi,mean)=>{let a;do{a=Array.from({length:n},()=>ri(lo,hi));}while(mean&&a.reduce((x,y)=>x+y,0)%n!==0);return a;};
+  if(k==='a'){const n=lv===1?pick([3,4]):pick([4,5]),a=mkList(n,lv===1?40:60,lv===1?90:100,1),s=a.reduce((x,y)=>x+y,0);return N({say:'平均數',expr:a.join('、')+' 的平均數是 {}',ans:s/n,ev:s/n,ex:{steps:['平均數 = 總和 ÷ 個數。','總和：'+a.join(' + ')+' = '+s+'。',s+' ÷ '+n+' = <mark>'+s/n+'</mark>。']}});}
+  if(k==='b'){const n=ri(3,6),m=ri(60,95),s=n*m;return N({say:'平均每次 '+m+' 分，一共考了 '+n+' 次',expr:'總分是 {} 分',ans:s,ev:s,ex:{steps:['總和 = 平均數 × 個數。',m+' × '+n+' = <mark>'+s+'</mark>。']}});}
+  if(k==='c'){const n=ri(3,5),a=mkList(n,60,100,0),m=ri(70,90),last=m*(n+1)-a.reduce((x,y)=>x+y,0);if(last<30||last>100)return gAvg5(lv);return N({say:'前 '+n+' 次考了 '+a.join('、')+' 分',expr:'第 '+(n+1)+' 次要考 {} 分，'+(n+1)+' 次的平均才會是 '+m+' 分',ans:last,ev:last,ex:{steps:[(n+1)+' 次的總分要是 '+m+' × '+(n+1)+' = '+m*(n+1)+'。','前 '+n+' 次的總分是 '+a.join(' + ')+' = '+a.reduce((x,y)=>x+y,0)+'。',m*(n+1)+' − '+a.reduce((x,y)=>x+y,0)+' = <mark>'+last+'</mark>。']}});}
+  if(k==='d'){const n1=ri(3,6),m1=ri(60,90),n2=ri(2,5),m2=ri(60,95),s=n1*m1+n2*m2;if(s%(n1+n2))return gAvg5(lv);return N({say:'甲組 '+n1+' 人平均 '+m1+' 分，乙組 '+n2+' 人平均 '+m2+' 分',expr:'兩組合起來的平均是 {} 分',ans:s/(n1+n2),ev:s/(n1+n2),ex:{steps:['甲組總分：'+m1+' × '+n1+' = '+n1*m1+'，乙組總分：'+m2+' × '+n2+' = '+n2*m2+'。','全部總分 '+s+'，共 '+(n1+n2)+' 人。',s+' ÷ '+(n1+n2)+' = <mark>'+s/(n1+n2)+'</mark>。']}});}
+  const n=ri(4,7),m=ri(20,60),A=ri(1,n-1);
+  return N({say:'小明 '+n+' 天，平均每天存 '+m+' 元',expr:'一共存了 {} 元',ans:n*m,ev:n*m,ex:{steps:['總和 = 平均 × 天數。',m+' × '+n+' = <mark>'+n*m+'</mark>。']}});
+}
+function gWord5(lv){
+  const k=pick(lv===1?['a','b','c']:lv===2?['a','b','d','e','f']:['d','e','f','g','h','i']);
+  if(k==='a'){const p=ri(11,59)/10,m=ri(2,6),P=Math.round(p*10);return N({say:'一公斤蘋果 '+ds(P,1)+' 元，買 '+m+' 公斤。',expr:'要付 {} 元',unit:'元',ans:ds(P*m,1),dec:1,ev:ds(P,1)+'*'+m,ex:{steps:['總價 = 單價 × 公斤數。',ds(P,1)+' × '+m+' = '+P*m+' ÷ 10 = <mark>'+ds(P*m,1)+'</mark>。']}});}
+  if(k==='b'){const q=ri(3,12),u=pick([5,6,8,4]),L=q*u/10;return N({say:'一條緞帶長 '+ds(q*u,1)+' 公尺，每 '+ds(u,1)+' 公尺剪一段。',expr:'可以剪成 {} 段',ans:q,ev:q,ex:{steps:['總長 ÷ 每段長：'+ds(q*u,1)+' ÷ '+ds(u,1)+'。','同乘 10：'+q*u+' ÷ '+u+' = <mark>'+q+'</mark>。']}});}
+  if(k==='c'){const b=ri(4,12),h=ri(3,9);return N({say:'一塊平行四邊形的田，底 '+b+' 公尺，高 '+h+' 公尺。',expr:'面積是 {} 平方公尺',ans:b*h,ev:b*h,ex:{steps:['平行四邊形面積 = 底 × 高。',b+' × '+h+' = <mark>'+b*h+'</mark>。']}});}
+  if(k==='d'){const x=pick([[6,8],[4,6],[9,12],[8,12]]),L=lcm(x[0],x[1]);return N({say:'甲每 '+x[0]+' 天去一次圖書館，乙每 '+x[1]+' 天去一次。今天兩人在圖書館遇到。',expr:'再過 {} 天又會遇到',unit:'天',ans:L,ev:L,ex:{steps:['要找 '+x[0]+' 和 '+x[1]+' 的最小公倍數。','最小公倍數是 <mark>'+L+'</mark>，所以再過 '+L+' 天。']}});}
+  if(k==='e'){const l=pick([20,25,30,40,50]),w=pick([20,30,40,25]),h=pick([20,30,40,50]),v=l*w*h;if(v%1000)return gWord5(lv);return N({say:'一個長 '+l+'、寬 '+w+'、高 '+h+' 公分的魚缸，裝滿水。',expr:'水有 {} 公升',unit:'公升',ans:v/1000,ev:v/1000,ex:{steps:['體積：'+l+' × '+w+' × '+h+' = '+v+' 立方公分。',v+' ÷ 1000 = <mark>'+v/1000+'</mark> 公升。']}});}
+  if(k==='f'){const n=ri(4,6),m=ri(70,95),s=n*m;return N({say:'小美 '+n+' 次數學考試平均 '+m+' 分。',expr:'總共考了 {} 分',ans:s,ev:s,ex:{steps:['總分 = 平均 × 次數。',m+' × '+n+' = <mark>'+s+'</mark>。']}});}
+  if(k==='g'){const a=ri(4,10),c=ri(a+3,a+9),h=ri(4,10)*2,A=(a+c)*h/2;return N({say:'梯形花圃，上底 '+a+' 公尺，下底 '+c+' 公尺，高 '+h+' 公尺。',expr:'面積是 {} 平方公尺',ans:A,ev:A,ex:{steps:['梯形面積 =（上底 + 下底）× 高 ÷ 2。','（'+a+' + '+c+'）× '+h+' ÷ 2 = <mark>'+A+'</mark>。']}});}
+  if(k==='h'){const g=pick([6,8,9,12]),a=g*ri(3,6),b=g*ri(2,5);if(a===b)return gWord5(lv);return N({say:'有 '+a+' 顆糖和 '+b+' 塊餅乾，要平分給同學，每人拿到的糖和餅乾都一樣多，沒有剩。',expr:'最多可以分給 {} 位同學',unit:'位',ans:gcd(a,b),ev:gcd(a,b),ex:{steps:['人數要同時是 '+a+' 和 '+b+' 的因數。','要最多，就是最大公因數 <mark>'+gcd(a,b)+'</mark>。']}});}
+  const P=ri(25,95)*10+5,m=ri(2,5);return N({say:'一支筆 '+ds(P,2)+' 元，買 '+m+' 支。',expr:'要付 {} 元',unit:'元',ans:ds(P*m,2),dec:1,ev:ds(P,2)+'*'+m,ex:{steps:['總價 = 單價 × 數量。',ds(P,2)+' × '+m+' = <mark>'+ds(P*m,2)+'</mark>。']}});
+}
+/* ---------- grade 6 generators ---------- */
+const PI_NOTE='圓周率取 3.14。';
+function gFmul6(lv){
+  const k=lv===1?pick(['a','a','b']):lv===2?pick(['a','c','b','w']):pick(['c','m','w','m']);
+  const dd=lv===1?[2,3,4,5]:[3,4,5,6,7,8,9];
+  if(k==='b'){const d=ri(2,9),q=ri(2,6),n=ri(1,d-1),I=d*q;return N({say:'整數乘分數',expr:I+' × '+fr(n,d)+' = {}',ans:q*n,ev:q*n,ex:{steps:[I+' × '+fr(n,d)+' = '+I+' × '+n+' ÷ '+d+'。','先約分：'+I+' ÷ '+d+' = '+q+'。',q+' × '+n+' = <mark>'+q*n+'</mark>。']}});}
+  let d1=pick(dd),d2=pick(dd),n1=ri(1,d1-1),n2=ri(1,d2-1);
+  if(k==='c'){
+    const g=pick([2,3,4]);d1=pick([6,8,9,10,12]);d2=pick([4,5,6,8,9]);n1=ri(1,d1-1);n2=ri(1,d2-1);
+  }
+  if(k==='m'){
+    const w=ri(1,3),d=pick([3,4,5,6]),n=ri(1,d-1),A=w*d+n;
+    d2=pick([3,4,5,6,8]);n2=ri(1,d2-1);
+    return fQ('帶分數乘分數（答案要最簡）',mx(w,n,d)+' × '+fr(n2,d2)+' = ?',A*n2,d*d2,[[w*n2+n*n2,d*d2],[A*n2,d+d2],[w*n2+n,d*d2]],['先把帶分數化成假分數：'+mx(w,n,d)+' = '+fr(A,d)+'。',fr(A,d)+' × '+fr(n2,d2)+' = '+fr(A+'×'+n2,d+'×'+d2)+' = '+fr(A*n2,d*d2)+'。','約分、化成最簡：'+fstr(A*n2,d*d2)+'。']);
+  }
+  if(k==='w'){
+    const d=pick([2,3,4,5]),n=ri(1,d-1),it=pick([['一瓶果汁有','公升'],['一塊蛋糕重','公斤'],['一條繩子長','公尺']]),d3=pick([3,4,5,6]),n3=ri(1,d3-1);
+    return fQ(it[0]+' '+fr(n,d)+' '+it[1]+'，',fr(n3,d3)+' 這麼多是多少'+it[1]+'？',n*n3,d*d3,[[n+n3,d+d3],[n*n3,d+d3]],['求「'+fr(n,d)+' 的 '+fr(n3,d3)+'」，用乘法：'+fr(n,d)+' × '+fr(n3,d3)+'。','分子乘分子、分母乘分母：'+fr(n*n3,d*d3)+'。','約分：'+fstr(n*n3,d*d3)+' '+it[1]+'。']);
+  }
+  return fQ('分數乘法（答案要最簡）',fr(n1,d1)+' × '+fr(n2,d2)+' = ?',n1*n2,d1*d2,[[n1+n2,d1+d2],[n1*n2,d1+d2],[n1+n2,d1*d2]],[fr(n1,d1)+' × '+fr(n2,d2)+'：分子乘分子，分母乘分母。',fr(n1+'×'+n2,d1+'×'+d2)+' = '+fr(n1*n2,d1*d2)+'。','約分：'+fstr(n1*n2,d1*d2)+'。']);
+}
+function gFdiv6(lv){
+  const k=lv===1?pick(['r','r','a']):lv===2?pick(['a','b','c','b']):pick(['c','d','b','c']);
+  if(k==='r'){const d=ri(2,9),n=ri(1,9);if(n===d)return gFdiv6(lv);return N({say:'倒數',expr:fr(n,d)+' 的倒數是 '+fr('{}',n),ans:d,ev:d,ex:{steps:['兩個數相乘等於 1，它們就互為倒數。','把分子分母上下顛倒：'+fr(n,d)+' → '+fr('<mark>'+d+'</mark>',n)+'。（驗算：'+fr(n,d)+' × '+fr(d,n)+' = 1）']}});}
+  if(k==='a'){const d=ri(3,9),n=ri(1,d-1),m=ri(2,6);return fQ('分數除以整數（答案要最簡）',fr(n,d)+' ÷ '+m+' = ?',n,d*m,[[n*m,d],[n+m,d],[n,d+m]],['除以 '+m+'，等於乘以它的倒數 '+fr(1,m)+'。',fr(n,d)+' × '+fr(1,m)+' = '+fr(n,d*m)+'。','約分：'+fstr(n,d*m)+'。']);}
+  if(k==='b'){const n=ri(1,5),d=ri(n+1,9),q=ri(2,7),I=n*q;return N({say:'整數除以分數',expr:I+' ÷ '+fr(n,d)+' = {}',ans:q*d,ev:q*d,ex:{steps:['除以 '+fr(n,d)+'，等於乘以倒數 '+fr(d,n)+'。',I+' × '+fr(d,n)+' = '+I+' ÷ '+n+' × '+d+'。',q+' × '+d+' = <mark>'+q*d+'</mark>。']}});}
+  if(k==='c'){
+    const d1=ri(3,9),n1=ri(1,d1-1);let d2=ri(3,9),n2=ri(1,d2-1);if(n1*d2===n2*d1)n2=n2===1?2:n2-1;
+    return fQ('分數除以分數（答案要最簡）',fr(n1,d1)+' ÷ '+fr(n2,d2)+' = ?',n1*d2,d1*n2,[[n1*n2,d1*d2],[n1*d2,d1+n2],[d1*n2,n1*d2]],['除以 '+fr(n2,d2)+'，等於乘以倒數 '+fr(d2,n2)+'。',fr(n1,d1)+' × '+fr(d2,n2)+' = '+fr(n1*d2,d1*n2)+'。','約分、化成最簡：'+fstr(n1*d2,d1*n2)+'。']);
+  }
+  const d1=pick([2,3,4,5]),n1=ri(1,d1-1)+(Math.random()<.5?d1:0),kq=ri(2,6),d2=d1*kq,it=pick(['公尺','公斤','公升']);
+  return N({say:'有 '+fr(n1,d1)+' '+it+'，每份 '+fr(n1,d2)+' '+it+'。',expr:'可以分成 {} 份',unit:'份',ans:kq,ev:kq,ex:{steps:['總量 ÷ 每份：'+fr(n1,d1)+' ÷ '+fr(n1,d2)+'。','乘以倒數：'+fr(n1,d1)+' × '+fr(d2,n1)+' = '+fr(d2,d1)+'。',d2+' ÷ '+d1+' = <mark>'+kq+'</mark>。']}});
+}
+function gDec6(lv){
+  const k=lv===1?pick(['a','e','f']):lv===2?pick(['c','d','e','f','b']):pick(['c','d','b','f','g']);
+  if(k==='a'){const A=nz10(11,59),B=nz10(11,39);return N({say:'小數乘法',expr:ds(A,1)+' × '+ds(B,1)+' = {}',ans:ds(A*B,2),dec:1,ev:ds(A,1)+'*'+ds(B,1),ex:{steps:['當成整數乘：'+A+' × '+B+' = '+A*B+'。','兩個數共有 2 位小數，積也要有 2 位：<mark>'+ds(A*B,2)+'</mark>。']}});}
+  if(k==='b'){const A=nz10(101,299),B=nz10(11,39);return N({say:'小數乘法',expr:ds(A,2)+' × '+ds(B,1)+' = {}',ans:ds(A*B,3),dec:1,ev:ds(A,2)+'*'+ds(B,1),ex:{steps:['當成整數乘：'+A+' × '+B+' = '+A*B+'。','共有 2 + 1 = 3 位小數。','點上小數點：<mark>'+ds(A*B,3)+'</mark>。']}});}
+  if(k==='c'){
+    const b=pick([3,6,7,9,11]),a=ri(2,29),t=Math.floor(a*100/b),R=Math.floor(t/10)+(t%10>=5?1:0);
+    if(a%b===0)return gDec6(lv);
+    return N({say:'除不盡時，四捨五入到小數第一位',expr:a+' ÷ '+b+' ≈ {}',ans:ds(R,1),dec:1,ev:ds(R,1),ex:{steps:['商算到小數第二位：'+a+' ÷ '+b+' ≈ '+ds(t,2)+'。','看第二位 '+(t%10)+'，'+(t%10>=5?'≥ 5，要進位':'< 5，要捨去')+'。','所以約是 <mark>'+ds(R,1)+'</mark>。']}});
+  }
+  if(k==='d'){
+    const d=pick([2,4,5,8,10,20,25]),n=ri(1,d-1),kk={2:1,4:2,5:1,8:3,10:1,20:2,25:2}[d],R=n*Math.pow(10,kk)/d,off=pick([-1,1,0.5,-0.5])*Math.pow(10,-kk>-2?0:0);
+    let decv=R+pick([-5,5,-10,10]);if(decv<=0)decv=R+7;
+    const dec=ds(decv,kk);
+    if(decv*d===n*Math.pow(10,kk))return gDec6(lv);
+    const big=Math.random()<.5,fv=n/d,dv=decv/Math.pow(10,kk),bigIsF=fv>dv,ans=(big===bigIsF)?fr(n,d):dec;
+    return C({say:big?'哪一個數比較大？':'哪一個數比較小？',html:1,choices:shuf([fr(n,d),dec]),ans,ex:{steps:[fr(n,d)+' = '+n+' ÷ '+d+' = '+ds(R,kk)+'。','比較 '+ds(R,kk)+' 和 '+dec+'。',(big?'較大':'較小')+'的是 <mark>'+(big===bigIsF?ds(R,kk):dec)+'</mark>。']}});
+  }
+  if(k==='e'){const A=nz10(11,59),B=ri(2,6),C2=nz10(11,39);return N({say:'先乘後加',expr:ds(A,1)+' + '+B+' × '+ds(C2,1)+' = {}',ans:ds(A+B*C2,1),dec:1,ev:ds(A,1)+'+'+B+'*'+ds(C2,1),ex:{steps:['先算乘法：'+B+' × '+ds(C2,1)+' = '+ds(B*C2,1)+'。',ds(A,1)+' + '+ds(B*C2,1)+' = <mark>'+ds(A+B*C2,1)+'</mark>。']}});}
+  if(k==='f'){let A=nz10(31,99),B=nz10(11,A-10);const C2=ri(2,6);return N({say:'先算括號',expr:'（'+ds(A,1)+' − '+ds(B,1)+'）× '+C2+' = {}',ans:ds((A-B)*C2,1),dec:1,ev:'('+ds(A,1)+'-'+ds(B,1)+')*'+C2,ex:{steps:['先算括號：'+ds(A,1)+' − '+ds(B,1)+' = '+ds(A-B,1)+'。',ds(A-B,1)+' × '+C2+' = <mark>'+ds((A-B)*C2,1)+'</mark>。']}});}
+  let b,q,A;do{b=nz10(12,39);q=ri(3,30);A=q*b;}while(A%10===0);
+  return N({say:'小數除法',expr:ds(A,1)+' ÷ '+ds(b,1)+' = {}',ans:q,ev:q,ex:{steps:['除數和被除數同乘 10：'+A+' ÷ '+b+'。',A+' ÷ '+b+' = <mark>'+q+'</mark>。']}});
+}
+function gRatio6(lv){
+  const k=lv===1?pick(['a','b','b']):lv===2?pick(['c','d','b','a']):pick(['e','f','d','c']);
+  if(k==='a'){const p=pick([[1,2,'0.5'],[3,4,'0.75'],[1,4,'0.25'],[3,2,'1.5'],[1,5,'0.2'],[2,5,'0.4'],[3,5,'0.6'],[4,5,'0.8'],[5,4,'1.25'],[5,2,'2.5']]),m=ri(2,5);return N({say:'比值',expr:p[0]*m+' : '+p[1]*m+' 的比值是 {}',ans:p[2],dec:1,ev:p[2],ex:{steps:['比值 = 前項 ÷ 後項。',p[0]*m+' ÷ '+p[1]*m+' = <mark>'+p[2]+'</mark>。']}});}
+  if(k==='b'){const pq=pick([[2,3],[3,4],[1,2],[2,5],[3,5],[4,5],[1,3],[3,7],[5,6],[2,7]]),m=ri(2,9);return N({say:'化成最簡單的整數比',expr:pq[0]*m+' : '+pq[1]*m+' = {} : '+pq[1],ans:pq[0],ev:pq[0],ex:{steps:['前項、後項同除以它們的最大公因數 '+m+'。',pq[0]*m+' ÷ '+m+' = <mark>'+pq[0]+'</mark>，'+pq[1]*m+' ÷ '+m+' = '+pq[1]+'。']}});}
+  if(k==='c'){const pq=pick([[2,3],[3,4],[1,2],[2,5],[3,5],[4,5],[1,3],[5,6]]),m=ri(2,9),front=Math.random()<.5;return N({say:'求比例式中的未知數',expr:front?'{} : '+pq[1]*m+' = '+pq[0]+' : '+pq[1]:pq[0]*m+' : {} = '+pq[0]+' : '+pq[1],ans:front?pq[0]*m:pq[1]*m,ev:front?pq[0]*m:pq[1]*m,ex:{steps:['比值要一樣。'+(front?pq[1]*m+' 是 '+pq[1]+' 的 '+m+' 倍。':pq[0]*m+' 是 '+pq[0]+' 的 '+m+' 倍。'),'另一項也要乘 '+m+'：'+(front?pq[0]+' × '+m:pq[1]+' × '+m)+' = <mark>'+(front?pq[0]*m:pq[1]*m)+'</mark>。']}});}
+  if(k==='d'){let a,b;do{a=ri(1,5);b=ri(a+1,7);}while(gcd(a,b)>1);const m=ri(3,9),T=(a+b)*m,who=Math.random()<.5;const it=pick(['糖果','貼紙','彈珠']);return N({say:'小明和小美合有 '+T+' 個'+it+'，兩人數量的比是 '+a+' : '+b+'。',expr:'小'+(who?'美':'明')+'有 {} 個',ans:(who?b:a)*m,ev:(who?b:a)*m,ex:{steps:['總份數：'+a+' + '+b+' = '+(a+b)+' 份。','每份：'+T+' ÷ '+(a+b)+' = '+m+'。','小'+(who?'美':'明')+'有 '+(who?b:a)+' 份：'+(who?b:a)+' × '+m+' = <mark>'+(who?b:a)*m+'</mark>。']}});}
+  if(k==='e'){const s=pick([100,200,500,1000,2000,5000]),c=ri(2,12),real=c*s/100;if(!Number.isInteger(real))return gRatio6(lv);return N({say:'地圖的比例尺是 1 : '+s+'，圖上長 '+c+' 公分。',expr:'實際長是 {} 公尺',unit:'公尺',ans:real,ev:real,ex:{steps:['1 : '+s+' 表示圖上 1 公分，實際是 '+s+' 公分。',c+' × '+s+' = '+c*s+' 公分。','1 公尺 = 100 公分：'+c*s+' ÷ 100 = <mark>'+real+'</mark> 公尺。']}});}
+  const s=pick([100,200,500,1000,2000]),c=ri(2,10),real=c*s/100;if(!Number.isInteger(real))return gRatio6(lv);
+  return N({say:'比例尺是 1 : '+s+'，實際距離 '+real+' 公尺。',expr:'地圖上要畫 {} 公分',unit:'公分',ans:c,ev:c,ex:{steps:[real+' 公尺 = '+real*100+' 公分。','圖上長 = 實際長 ÷ '+s+'。',real*100+' ÷ '+s+' = <mark>'+c+'</mark> 公分。']}});
+}
+function gPct6(lv){
+  const k=lv===1?pick(['a','b','f','a']):lv===2?pick(['c','d','g','c']):pick(['e','h','d','c','i']);
+  const zhe={50:'五',60:'六',70:'七',80:'八',90:'九',75:'七五',85:'八五',95:'九五',65:'六五'};
+  if(k==='a'){if(Math.random()<.5){const n=ri(1,99);return N({say:'小數化成百分率',expr:ds(n,2)+' = {} %',unit:'%',ans:n,ev:n,ex:{steps:['百分率就是「每 100 份中佔幾份」。',ds(n,2)+' 的小數點向右移 2 位，得 <mark>'+n+'</mark>%。']}});}const d=pick([2,4,5,10,20,25,50]),n=ri(1,d-1);return N({say:'分數化成百分率',expr:fr(n,d)+' = {} %',unit:'%',ans:n*100/d,ev:n*100/d,ex:{steps:['把分母變成 100：'+fr(n,d)+' = '+fr(n*100/d,100)+'。',fr(n*100/d,100)+' = <mark>'+n*100/d+'</mark>%。']}});}
+  if(k==='b'){const n=ri(1,99);return N({say:'百分率化成小數',expr:n+'% = {}',ans:ds(n,2),dec:1,ev:n/100,ex:{steps:[n+'% = '+fr(n,100)+'。','= '+n+' ÷ 100 = <mark>'+ds(n,2)+'</mark>。']}});}
+  if(k==='f'){const n=ri(1,9);return N({say:'成數：1 成 = 10%',expr:n+' 成 = {} %',unit:'%',ans:n*10,ev:n*10,ex:{steps:['1 成是 '+fr(1,10)+'，也就是 10%。',n+' × 10 = <mark>'+n*10+'</mark>%。']}});}
+  if(k==='c'){const p=pick([50,60,70,80,90,75,85]),P=pick([100,200,300,400,500,600,800,1000,1200]),r=P*p/100;if(!Number.isInteger(r))return gPct6(lv);return N({say:'一件衣服原價 '+P+' 元，打'+zhe[p]+'折。',expr:'要付 {} 元',unit:'元',ans:r,ev:r,ex:{steps:['打'+zhe[p]+'折，就是原價的 '+p+'%。',P+' × '+p+'% = '+P+' × '+ds(p,2)+' = <mark>'+r+'</mark>。']}});}
+  if(k==='d'){const t=pick([20,25,40,50,80,100,200]),c=ri(Math.ceil(t/10),t-1);if((c*100)%t)return gPct6(lv);return N({say:'一份測驗共 '+t+' 題，答對 '+c+' 題。',expr:'答對率是 {} %',unit:'%',ans:c*100/t,ev:c*100/t,ex:{steps:['百分率 = 部分 ÷ 全部 × 100%。',c+' ÷ '+t+' = '+ds(c*100/t,2)+'，× 100% = <mark>'+c*100/t+'</mark>%。']}});}
+  if(k==='g'){const T=pick([100,200,300,400,500,800]),p=pick([10,15,20,25,30,35,40,45]),v=T*p/100;if(!Number.isInteger(v))return gPct6(lv);return N({say:'全校共 '+T+' 人，圓形圖上，喜歡跳繩的佔 '+p+'%。',expr:'喜歡跳繩的有 {} 人',unit:'人',ans:v,ev:v,ex:{steps:[T+' × '+p+'% = '+T+' × '+ds(p,2)+'。','= <mark>'+v+'</mark> 人。']}});}
+  if(k==='e'){const P=pick([100,200,250,400,500,800,1000]),p=pick([10,20,25,30,40,50]),up=Math.random()<.5,r=P*(100+(up?p:-p))/100;if(!Number.isInteger(r))return gPct6(lv);return N({say:'原本是 '+P+'，'+(up?'增加':'減少')+'了 '+p+'%。',expr:'現在是 {}',ans:r,ev:r,ex:{steps:[(up?'增加':'減少')+' '+p+'%，現在是原來的 '+(100+(up?p:-p))+'%。',P+' × '+(100+(up?p:-p))+'% = <mark>'+r+'</mark>。']}});}
+  if(k==='h'){const p=pick([50,60,70,80,90]),P=pick([100,200,300,400,500]),r=P*p/100;return N({say:'打'+zhe[p]+'折後賣 '+r+' 元。',expr:'原價是 {} 元',unit:'元',ans:P,ev:P,ex:{steps:['打'+zhe[p]+'折是原價的 '+p+'%，所以 原價 × '+p+'% = '+r+'。','原價 = '+r+' ÷ '+ds(p,2)+' = <mark>'+P+'</mark>。']}});}
+  const P=pick([200,400,500,800,1000]),p=pick([5,10,20,25]),r=P*p/100;
+  return N({say:'存款 '+P+' 元，年利率 '+p+'%（不複利）。',expr:'一年的利息是 {} 元',unit:'元',ans:r,ev:r,ex:{steps:['利息 = 本金 × 利率。',P+' × '+p+'% = '+P+' × '+ds(p,2)+' = <mark>'+r+'</mark>。']}});
+}
+function gCirc6(lv){
+  const k=lv===1?pick(['a','b','c']):lv===2?pick(['c','d','e','b']):pick(['d','e','f','g','h']);
+  if(k==='a'){const D=ri(2,20);return N({say:'圓的周長是多少？（'+PI_NOTE+'）',vis:circSvg(D+' 公分','d'),expr:'周長 = {}',unit:'公分',ans:ds(D*314,2),dec:1,ev:D+'*3.14',ex:{steps:['圓周長 = 直徑 × 圓周率。',D+' × 3.14 = <mark>'+ds(D*314,2)+'</mark>。']}});}
+  if(k==='b'){const r=ri(2,15);return N({say:'圓的周長是多少？（'+PI_NOTE+'）',vis:circSvg('半徑 '+r,'r'),expr:'周長 = {}',unit:'公分',ans:ds(2*r*314,2),dec:1,ev:2*r+'*3.14',ex:{steps:['直徑 = 半徑 × 2 = '+2*r+'。','周長 = 直徑 × 3.14 = '+2*r+' × 3.14 = <mark>'+ds(2*r*314,2)+'</mark>。']}});}
+  if(k==='c'){const r=ri(2,12);return N({say:'圓的面積是多少？（'+PI_NOTE+'）',vis:circSvg('半徑 '+r,'r'),expr:'面積 = {}',unit:'平方公分',ans:ds(r*r*314,2),dec:1,ev:r+'*'+r+'*3.14',ex:{steps:['圓面積 = 半徑 × 半徑 × 圓周率。',r+' × '+r+' = '+r*r+'，'+r*r+' × 3.14 = <mark>'+ds(r*r*314,2)+'</mark>。']}});}
+  if(k==='d'){const D=ri(3,25);return N({say:'圓的周長是 '+ds(D*314,2)+' 公分。（'+PI_NOTE+'）',expr:'直徑是 {} 公分',ans:D,ev:D,ex:{steps:['周長 = 直徑 × 3.14，所以 直徑 = 周長 ÷ 3.14。',ds(D*314,2)+' ÷ 3.14 = <mark>'+D+'</mark>。']}});}
+  if(k==='e'){const D=2*ri(2,10),R=(D/2)*314+D*100;return N({say:'半圓形（含直徑）的周長，直徑是 '+D+' 公分。（'+PI_NOTE+'）',expr:'周長 = {} 公分',ans:ds(R,2),dec:1,ev:D*3.14/2+'+'+D,ex:{steps:['弧線長：整圓周長的一半 = '+D+' × 3.14 ÷ 2 = '+ds((D/2)*314,2)+'。','別忘了加上直徑 '+D+'。',ds((D/2)*314,2)+' + '+D+' = <mark>'+ds(R,2)+'</mark>。']}});}
+  if(k==='f'){const r=ri(2,8),R2=ri(r+1,r+6);return N({say:'環形：大圓半徑 '+R2+' 公分，小圓半徑 '+r+' 公分。（'+PI_NOTE+'）',expr:'環形面積是 {} 平方公分',ans:ds((R2*R2-r*r)*314,2),dec:1,ev:'('+R2*R2+'-'+r*r+')*3.14',ex:{steps:['環形面積 = 大圓面積 − 小圓面積。','= （'+R2+'×'+R2+' − '+r+'×'+r+'）× 3.14','= '+(R2*R2-r*r)+' × 3.14 = <mark>'+ds((R2*R2-r*r)*314,2)+'</mark>。']}});}
+  if(k==='g'){const r=2*ri(1,6),v=r*r/2*314;return N({say:'半圓形的半徑是 '+r+' 公分。（'+PI_NOTE+'）',expr:'面積是 {} 平方公分',ans:ds(v,2),dec:1,ev:r*r+'*3.14/2',ex:{steps:['整個圓面積：'+r+' × '+r+' × 3.14 = '+ds(r*r*314,2)+'。','半圓是一半：'+ds(r*r*314,2)+' ÷ 2 = <mark>'+ds(v,2)+'</mark>。']}});}
+  const a=2*ri(2,9);
+  return N({say:'正方形邊長 '+a+' 公分，裡面畫一個最大的圓。（'+PI_NOTE+'）',expr:'圓的面積是 {} 平方公分',ans:ds((a/2)*(a/2)*314,2),dec:1,ev:(a/2)*(a/2)+'*3.14',ex:{steps:['最大的圓，直徑 = 正方形邊長 '+a+'，半徑 = '+a/2+'。',(a/2)+' × '+(a/2)+' × 3.14 = <mark>'+ds((a/2)*(a/2)*314,2)+'</mark>。']}});
+}
+function gSolid6(lv){
+  const k=lv===1?pick(['a','c','b']):lv===2?pick(['b','d','e','a']):pick(['d','f','g','e']);
+  if(k==='a'){const l=ri(3,10),w=ri(2,8),h=ri(2,8),S=2*(l*w+l*h+w*h);return N({say:'長方體的表面積是多少？（單位：平方公分）',vis:boxSvg(l,w,h),expr:'表面積 = {}',unit:'平方公分',ans:S,ev:S,ex:{steps:['有 6 個面，兩兩一樣大：','上下：'+l+' × '+w+' = '+l*w+'，前後：'+l+' × '+h+' = '+l*h+'，左右：'+w+' × '+h+' = '+w*h+'。','（'+l*w+' + '+l*h+' + '+w*h+'）× 2 = <mark>'+S+'</mark>。']}});}
+  if(k==='b'){const b=ri(3,12),h=ri(2,9),H=ri(3,12);let bb=b;if((bb*h)%2)bb++;const bs=bb*h/2;return N({say:'三角柱：底面是三角形（底 '+bb+'，高 '+h+' 公分），柱高 '+H+' 公分。',expr:'體積是 {} 立方公分',ans:bs*H,ev:bs*H,ex:{steps:['柱體體積 = 底面積 × 高。','底面積（三角形）：'+bb+' × '+h+' ÷ 2 = '+bs+'。',bs+' × '+H+' = <mark>'+bs*H+'</mark>。']}});}
+  if(k==='c'){const A=ri(6,40),H=ri(2,12);return N({say:'柱體的底面積是 '+A+' 平方公分，高是 '+H+' 公分。',expr:'體積是 {} 立方公分',ans:A*H,ev:A*H,ex:{steps:['柱體體積 = 底面積 × 高。',A+' × '+H+' = <mark>'+A*H+'</mark>。']}});}
+  if(k==='d'){const r=ri(2,8),h=ri(2,12);return N({say:'圓柱體積是多少？（'+PI_NOTE+'）',vis:cylSvg('r='+r,'h='+h),expr:'體積 = {} 立方公分',ans:ds(r*r*h*314,2),dec:1,ev:r*r*h+'*3.14',ex:{steps:['底面積（圓）：'+r+' × '+r+' × 3.14 = '+ds(r*r*314,2)+'。','體積 = 底面積 × 高 = '+ds(r*r*314,2)+' × '+h+' = <mark>'+ds(r*r*h*314,2)+'</mark>。']}});}
+  if(k==='e'){const r=ri(2,8),h=ri(2,12);return N({say:'圓柱的底面半徑 '+r+' 公分，高 '+h+' 公分。（'+PI_NOTE+'）',vis:cylSvg('r='+r,'h='+h),expr:'側面積（把側面攤開成長方形）= {} 平方公分',ans:ds(2*r*h*314,2),dec:1,ev:2*r*h+'*3.14',ex:{steps:['側面攤開是長方形：長 = 底面圓周長，寬 = 高。','圓周長：2 × '+r+' × 3.14 = '+ds(2*r*314,2)+'。',ds(2*r*314,2)+' × '+h+' = <mark>'+ds(2*r*h*314,2)+'</mark>。']}});}
+  if(k==='f'){const r=ri(2,6),h=ri(2,9);return N({say:'圓柱的底面半徑 '+r+' 公分，高 '+h+' 公分。（'+PI_NOTE+'）',vis:cylSvg('r='+r,'h='+h),expr:'表面積 = {} 平方公分',ans:ds(2*314*r*(h+r),2),dec:1,ev:2*r*(h+r)+'*3.14',ex:{steps:['側面積：2 × '+r+' × 3.14 × '+h+' = '+ds(2*r*h*314,2)+'。','兩個底面：2 × '+r+' × '+r+' × 3.14 = '+ds(2*r*r*314,2)+'。',ds(2*r*h*314,2)+' + '+ds(2*r*r*314,2)+' = <mark>'+ds(2*314*r*(h+r),2)+'</mark>。']}});}
+  const r=pick([5,10,10,15,20]),h=pick([10,20,30,40]),v=r*r*h*314;
+  return N({say:'圓柱形水桶，底面半徑 '+r+' 公分，高 '+h+' 公分。（'+PI_NOTE+'）',expr:'裝滿水有 {} 公升',unit:'公升',ans:ds(v,5),dec:1,ev:r*r*h*3.14+'/1000',ex:{steps:['體積：'+r+' × '+r+' × 3.14 × '+h+' = '+ds(v,2)+' 立方公分。','1 公升 = 1000 立方公分：'+ds(v,2)+' ÷ 1000 = <mark>'+ds(v,5)+'</mark> 公升。']}});
+}
+function gAlg6(lv){
+  const k=lv===1?pick(['a','b','g']):lv===2?pick(['c','d','e','g']):pick(['e','f','h','e']);
+  if(k==='a'){const x=ri(3,40),a=ri(3,30);return N({say:'解方程式',expr:'x + '+a+' = '+(x+a)+'，x = {}',ans:x,ev:x,ex:{steps:['x 加上 '+a+' 等於 '+(x+a)+'，所以 x = '+(x+a)+' − '+a+'。','x = <mark>'+x+'</mark>。（驗算：'+x+' + '+a+' = '+(x+a)+'）']}});}
+  if(k==='b'){const x=ri(10,60),a=ri(3,9);return N({say:'解方程式',expr:'x − '+a+' = '+(x-a)+'，x = {}',ans:x,ev:x,ex:{steps:['x 減掉 '+a+' 剩 '+(x-a)+'，所以 x = '+(x-a)+' + '+a+'。','x = <mark>'+x+'</mark>。']}});}
+  if(k==='c'){const x=ri(3,15),a=ri(2,9);return N({say:'解方程式',expr:a+' × x = '+a*x+'，x = {}',ans:x,ev:x,ex:{steps:[a+' 乘以 x 等於 '+a*x+'，所以 x = '+a*x+' ÷ '+a+'。','x = <mark>'+x+'</mark>。']}});}
+  if(k==='d'){const x=ri(4,16),a=ri(2,9);return N({say:'解方程式',expr:'x ÷ '+a+' = '+x+'，x = {}',ans:a*x,ev:a*x,ex:{steps:['x 除以 '+a+' 等於 '+x+'，所以 x = '+x+' × '+a+'。','x = <mark>'+a*x+'</mark>。']}});}
+  if(k==='g'){const x=ri(2,9),a=ri(2,9),b=ri(1,9);return N({say:'代入求值',expr:'當 x = '+x+' 時，'+a+'x + '+b+' = {}',ans:a*x+b,ev:a*x+b,ex:{steps:[a+'x 就是 '+a+' × x。','把 x = '+x+' 代入：'+a+' × '+x+' + '+b+' = '+a*x+' + '+b+' = <mark>'+(a*x+b)+'</mark>。']}});}
+  if(k==='e'){const x=ri(3,15),a=ri(2,9),b=ri(2,20);return N({say:'解方程式',expr:a+'x + '+b+' = '+(a*x+b)+'，x = {}',ans:x,ev:x,ex:{steps:['先把 +'+b+' 移到右邊：'+(a*x+b)+' − '+b+' = '+a*x+'。',a+'x = '+a*x+'，x = '+a*x+' ÷ '+a+' = <mark>'+x+'</mark>。']}});}
+  if(k==='f'){const x=ri(4,15),a=ri(2,9),b=ri(2,15);return N({say:'解方程式',expr:a+'x − '+b+' = '+(a*x-b)+'，x = {}',ans:x,ev:x,ex:{steps:['先把 −'+b+' 移到右邊：'+(a*x-b)+' + '+b+' = '+a*x+'。',a+'x = '+a*x+'，x = '+a*x+' ÷ '+a+' = <mark>'+x+'</mark>。']}});}
+  const x=ri(5,20),p=ri(3,9),b=ri(10,40),c=p*x+b;
+  return N({say:'小明買 '+p+' 本一樣的筆記本，再加一支 '+b+' 元的筆，共花 '+c+' 元。設筆記本每本 x 元，列式：'+p+'x + '+b+' = '+c+'。',expr:'每本筆記本 {} 元',unit:'元',ans:x,ev:x,ex:{steps:[c+' − '+b+' = '+p*x+'（筆記本的總價）。',p*x+' ÷ '+p+' = <mark>'+x+'</mark>。']}});
+}
+function gSpeed6(lv){
+  const k=lv===1?pick(['a','b','c']):lv===2?pick(['c','d','e','b']):pick(['f','g','e','d','f']);
+  if(k==='a'){const v=ri(20,90),t=ri(2,6);return N({say:'一輛車行駛 '+v*t+' 公里，用了 '+t+' 小時。',expr:'速度是每小時 {} 公里',ans:v,ev:v,ex:{steps:['速度 = 距離 ÷ 時間。',v*t+' ÷ '+t+' = <mark>'+v+'</mark> 公里／小時。']}});}
+  if(k==='b'){const v=ri(20,90),t=ri(2,6);return N({say:'一輛車每小時行駛 '+v+' 公里，開了 '+t+' 小時。',expr:'共行駛 {} 公里',ans:v*t,ev:v*t,ex:{steps:['距離 = 速度 × 時間。',v+' × '+t+' = <mark>'+v*t+'</mark> 公里。']}});}
+  if(k==='c'){const v=ri(20,80),t=ri(2,7);return N({say:'一輛車每小時行駛 '+v+' 公里，要走 '+v*t+' 公里。',expr:'需要 {} 小時',unit:'小時',ans:t,ev:t,ex:{steps:['時間 = 距離 ÷ 速度。',v*t+' ÷ '+v+' = <mark>'+t+'</mark> 小時。']}});}
+  if(k==='d'){const v=6*ri(2,15);return N({say:'單位換算',expr:'每小時 '+v+' 公里 = 每分鐘 {} 公尺',ans:v*1000/60,ev:v*1000/60,ex:{steps:['1 公里 = 1000 公尺，1 小時 = 60 分鐘。',v+' × 1000 ÷ 60 = '+v*1000+' ÷ 60 = <mark>'+v*1000/60+'</mark>。']}});}
+  if(k==='e'){const s=5*ri(1,6);return N({say:'單位換算',expr:'每秒 '+s+' 公尺 = 每小時 {} 公里',ans:ds(s*36,1),dec:1,ev:s*3.6,ex:{steps:['1 小時 = 3600 秒，1 公里 = 1000 公尺。','每小時走 '+s+' × 3600 = '+s*3600+' 公尺。',s*3600+' ÷ 1000 = <mark>'+s*3.6+'</mark> 公里。']}});}
+  if(k==='f'){const a=ri(30,60),b=ri(30,60),t=ri(2,5),D=(a+b)*t;return N({say:'甲乙兩地相距 '+D+' 公里，兩車同時從兩地相向出發，甲車每小時 '+a+' 公里，乙車每小時 '+b+' 公里。',expr:'經過 {} 小時相遇',unit:'小時',ans:t,ev:t,ex:{steps:['每小時兩車合起來靠近：'+a+' + '+b+' = '+(a+b)+' 公里。',D+' ÷ '+(a+b)+' = <mark>'+t+'</mark> 小時。']}});}
+  const a=ri(40,80),b=ri(15,a-10),t=ri(2,6),D=(a-b)*t;
+  return N({say:'小華騎車每分鐘 '+a+' 公尺，在前面的小明走路每分鐘 '+b+' 公尺，小明在小華前面 '+D+' 公尺，兩人同向出發。',expr:'小華要 {} 分鐘才追上小明',unit:'分鐘',ans:t,ev:t,ex:{steps:['每分鐘小華追近：'+a+' − '+b+' = '+(a-b)+' 公尺。',D+' ÷ '+(a-b)+' = <mark>'+t+'</mark> 分鐘。']}});
+}
+function gWord6(lv){
+  const k=pick(lv===1?['a','b','c','d']:lv===2?['a','b','c','d','e','f']:['e','f','g','h','i','b']);
+  if(k==='a'){let a,b;do{a=ri(1,5);b=ri(a+1,7);}while(gcd(a,b)>1);const m=ri(3,9),T=(a+b)*m;return N({say:'果園裡蘋果樹和橘子樹共 '+T+' 棵，數量的比是 '+a+' : '+b+'。',expr:'橘子樹有 {} 棵',ans:b*m,ev:b*m,ex:{steps:['共 '+(a+b)+' 份，每份 '+T+' ÷ '+(a+b)+' = '+m+'。','橘子樹 '+b+' 份：'+b+' × '+m+' = <mark>'+b*m+'</mark>。']}});}
+  if(k==='b'){const p=pick([60,70,80,90,75]),P=pick([200,400,600,800,1000]),r=P*p/100,z={60:'六',70:'七',80:'八',90:'九',75:'七五'}[p];return N({say:'一雙鞋原價 '+P+' 元，打'+z+'折，再用 50 元折價券。',expr:'要付 {} 元',unit:'元',ans:r-50,ev:r-50,ex:{steps:['打折後：'+P+' × '+p+'% = '+r+' 元。',r+' − 50 = <mark>'+(r-50)+'</mark> 元。']}});}
+  if(k==='c'){const v=ri(30,80),t=ri(2,5);return N({say:'火車每小時走 '+v+' 公里，走 '+t+' 小時。',expr:'共走 {} 公里',unit:'公里',ans:v*t,ev:v*t,ex:{steps:['距離 = 速度 × 時間。',v+' × '+t+' = <mark>'+v*t+'</mark> 公里。']}});}
+  if(k==='d'){const d=pick([3,4,5,6,8]),n=ri(1,d-1),T=d*ri(3,9);return N({say:'全班有 '+T+' 人，其中 '+fr(n,d)+' 是男生。',expr:'男生有 {} 人',unit:'人',ans:T/d*n,ev:T/d*n,ex:{steps:[T+' × '+fr(n,d)+' = '+T+' ÷ '+d+' × '+n+'。',T/d+' × '+n+' = <mark>'+T/d*n+'</mark>。']}});}
+  if(k==='e'){const r=ri(3,12);return N({say:'圓形花圃的半徑是 '+r+' 公尺。（'+PI_NOTE+'）',expr:'花圃的面積是 {} 平方公尺',unit:'平方公尺',ans:ds(r*r*314,2),dec:1,ev:r*r+'*3.14',ex:{steps:['圓面積 = 半徑 × 半徑 × 3.14。',r+' × '+r+' × 3.14 = <mark>'+ds(r*r*314,2)+'</mark>。']}});}
+  if(k==='f'){const x=ri(10,40),a=ri(10,30);return N({say:'小明有若干元，花了 '+a+' 元買書，還剩 '+x+' 元。設原來有 y 元，列式：y − '+a+' = '+x+'。',expr:'原來有 {} 元',unit:'元',ans:x+a,ev:x+a,ex:{steps:['y = '+x+' + '+a+'。','y = <mark>'+(x+a)+'</mark>。']}});}
+  if(k==='g'){const P=pick([200,250,400,500,800]),p=pick([10,20,25,30,40,50]),r=P*(100+p)/100;if(!Number.isInteger(r))return gWord6(lv);return N({say:'商品原價 '+P+' 元，漲價 '+p+'%。',expr:'新價格是 {} 元',unit:'元',ans:r,ev:r,ex:{steps:['漲 '+p+'%，是原價的 '+(100+p)+'%。',P+' × '+(100+p)+'% = <mark>'+r+'</mark>。']}});}
+  if(k==='h'){const T=pick([60,72,96,120,144,180]),a=pick([3,4,6]),b=pick([2,3,4]);if(T%a)return gWord6(lv);const rest=T-T/a;if(rest%b)return gWord6(lv);return N({say:'一本書共 '+T+' 頁，第一天看了全部的 '+fr(1,a)+'，第二天看了剩下的 '+fr(1,b)+'。',expr:'第二天看了 {} 頁',unit:'頁',ans:rest/b,ev:rest/b,ex:{steps:['第一天：'+T+' ÷ '+a+' = '+T/a+' 頁，剩 '+T+' − '+T/a+' = '+rest+' 頁。','第二天：'+rest+' ÷ '+b+' = <mark>'+rest/b+'</mark> 頁。']}});}
+  const a=2*ri(2,8);return N({say:'一個圓柱水桶，底面半徑 '+a+' 公分，高 10 公分，水桶外面（側面）要貼上一圈紙。（'+PI_NOTE+'）',expr:'側面紙的面積是 {} 平方公分',unit:'平方公分',ans:ds(2*a*10*314,2),dec:1,ev:2*a*10+'*3.14',ex:{steps:['側面 = 底面圓周長 × 高。','圓周長：2 × '+a+' × 3.14 = '+ds(2*a*314,2)+'。',ds(2*a*314,2)+' × 10 = <mark>'+ds(2*a*10*314,2)+'</mark>。']}});
+}
+
 const UNITS={
   1:[
     {id:'g1count',n:'數數看',i:'🔢',gen:gCount},
@@ -1084,6 +1473,30 @@ const UNITS={
     {id:'g4area',n:'面積',i:'🟩',gen:gArea4},
     {id:'g4unit',n:'單位與時間',i:'🕰️',gen:gUnit4},
     {id:'g4word',n:'應用題',i:'📖',gen:gWord4}
+  ],
+  5:[
+    {id:'g5dmul',n:'小數乘法',i:'✖️',gen:gDmul5},
+    {id:'g5ddiv',n:'小數除法',i:'➗',gen:gDdiv5},
+    {id:'g5fac',n:'因數與倍數',i:'🔢',gen:gFac5},
+    {id:'g5fadd',n:'異分母分數加減',i:'🍕',gen:gFadd5},
+    {id:'g5fmul',n:'約分與分數乘法',i:'🧩',gen:gFmul5},
+    {id:'g5area',n:'面積',i:'🟩',gen:gArea5},
+    {id:'g5vol',n:'體積與容積',i:'📦',gen:gVol5},
+    {id:'g5poly',n:'多邊形與角',i:'📐',gen:gPoly5},
+    {id:'g5avg',n:'平均數',i:'📊',gen:gAvg5},
+    {id:'g5word',n:'應用題',i:'📖',gen:gWord5}
+  ],
+  6:[
+    {id:'g6fmul',n:'分數乘法',i:'✖️',gen:gFmul6},
+    {id:'g6fdiv',n:'分數除法',i:'➗',gen:gFdiv6},
+    {id:'g6dec',n:'小數四則',i:'🔟',gen:gDec6},
+    {id:'g6ratio',n:'比與比例尺',i:'⚖️',gen:gRatio6},
+    {id:'g6pct',n:'百分率',i:'💯',gen:gPct6},
+    {id:'g6circ',n:'圓',i:'⭕',gen:gCirc6},
+    {id:'g6solid',n:'柱體',i:'🥫',gen:gSolid6},
+    {id:'g6alg',n:'未知數',i:'🔍',gen:gAlg6},
+    {id:'g6speed',n:'速度',i:'🚗',gen:gSpeed6},
+    {id:'g6word',n:'應用題',i:'📖',gen:gWord6}
   ]
 };
 
@@ -1135,12 +1548,12 @@ function vSetup(){
   const av=AV[SU.theme];if(!av.includes(SU.avatar))SU.avatar=av[0];
   return '<div class="card"><div class="ttl">歡迎來到數學小勇者！</div>'+
   '<div>你的名字（可以不填）</div><div class="row"><input type="text" id="nm" maxlength="8" value="'+esc(SU.name)+'" oninput="SU.name=this.value"></div>'+
-  '<div>你讀幾年級？</div><div class="row pick">'+[1,2,3,4].map(g=>'<button class="big '+(SU.grade===g?'on':'')+'" onclick="setSUG('+g+')">'+g+' 年級</button>').join('')+'</div>'+
+  '<div>你讀幾年級？</div><div class="row pick">'+[1,2,3,4,5,6].map(g=>'<button class="big '+(SU.grade===g?'on':'')+'" onclick="setSUG('+g+')">'+g+' 年級</button>').join('')+'</div>'+
   '<div>選一個喜歡的風格</div><div class="row pick"><button class="big '+(SU.theme==='cute'?'on':'')+'" onclick="SU.theme=\'cute\';S.theme=\'cute\';render()">🌸 可愛</button><button class="big '+(SU.theme==='cool'?'on':'')+'" onclick="SU.theme=\'cool\';S.theme=\'cool\';render()">⚡ 帥氣</button><button class="big '+(SU.theme==='plain'?'on':'')+'" onclick="SU.theme=\'plain\';S.theme=\'plain\';render()">🌿 簡潔</button></div>'+
   '<div>選你的夥伴</div><div class="row avs">'+av.map(a=>'<button class="'+(SU.avatar===a?'on':'')+'" onclick="SU.avatar=\''+a+'\';render()">'+a+'</button>').join('')+'</div>'+
   '<div class="row"><button class="big" onclick="finishSetup()">開始！</button></div></div>';
 }
-function setSUG(g){SU.grade=g;SU.theme=g>=3?'plain':(SU.theme==='plain'?'cute':SU.theme);S.theme=SU.theme;render();}
+function setSUG(g){SU.grade=g;S.set.zy=g<=2;SU.theme=g>=3?'plain':(SU.theme==='plain'?'cute':SU.theme);S.theme=SU.theme;render();}
 function finishSetup(){
   S.grade=SU.grade;S.theme=SU.theme;S.avatar=SU.avatar;S.name=SU.name.trim();S.set.zy=S.grade<=2;
   save();go('home');
@@ -1299,7 +1712,7 @@ function upBg(inp){
 
 /* --- parent --- */
 function vParent(){
-  const us=UNITS[1].concat(UNITS[2],UNITS[3],UNITS[4]),days=[];
+  const us=UNITS[1].concat(UNITS[2],UNITS[3],UNITS[4],UNITS[5],UNITS[6]),days=[];
   for(let i=0;i<7;i++){const d=dstr(new Date(Date.now()-i*864e5));days.push([d,S.log[d]||{q:0,c:0,secs:0}]);}
   const opt=(arr,cur,fn)=>'<div class="row pick">'+arr.map(a=>'<button class="sm '+(cur===a[0]?'on':'')+'" onclick="'+fn+'('+a[0]+')">'+a[1]+'</button>').join('')+'</div>';
   let h='<div class="hdr"><button class="sm sec" onclick="go(\'home\')">◀ 回去</button><div class="who"><div class="ttl">家長頁</div></div></div>';
@@ -1308,9 +1721,9 @@ function vParent(){
   const rows=us.filter(u=>S.stats[u.id]);
   h+='<div class="card"><b>各單元表現</b>'+(rows.length?'<table class="st"><tr><th>單元</th><th>作答</th><th>正確率</th><th></th></tr>'+rows.map(u=>{
     const s=S.stats[u.id],p=Math.round(s.c/s.a*100),weak=s.a>=10&&p<60;
-    return '<tr><td>'+'一二三四'[u.id[1]-1]+'年級 '+u.n+'</td><td>'+s.a+'</td><td>'+p+'%</td><td class="'+(weak?'weak':'')+'">'+(weak?'需要加強':'')+'</td></tr>';
+    return '<tr><td>'+'一二三四五六'[u.id[1]-1]+'年級 '+u.n+'</td><td>'+s.a+'</td><td>'+p+'%</td><td class="'+(weak?'weak':'')+'">'+(weak?'需要加強':'')+'</td></tr>';
   }).join('')+'</table>':'<div>還沒有紀錄。</div>')+'</div>';
-  h+='<div class="card"><b>設定</b><div>年級</div>'+opt([[1,'1 年級'],[2,'2 年級'],[3,'3 年級'],[4,'4 年級']],S.grade,'setGrade')+
+  h+='<div class="card"><b>設定</b><div>年級</div>'+opt([[1,'1 年級'],[2,'2 年級'],[3,'3 年級'],[4,'4 年級'],[5,'5 年級'],[6,'6 年級']],S.grade,'setGrade')+
     '<div>字的大小（注音會跟著變大）</div>'+opt([[0,'標準'],[32,'大'],[38,'特大']],S.set.fs||0,'setFs')+'<div>每回合題數</div>'+opt([[5,'5 題'],[8,'8 題'],[10,'10 題']],S.set.n,'setN')+
     '<div>每天練習時間上限</div>'+opt([[0,'不限'],[15,'15 分鐘'],[20,'20 分鐘'],[30,'30 分鐘'],[45,'45 分鐘'],[60,'60 分鐘']],S.set.limit,'setLim')+
     '<div class="row pick"><button class="sm '+(S.set.zy?'on':'')+'" onclick="S.set.zy=!S.set.zy;save();render()">注音：'+(S.set.zy?'開':'關')+'</button><button class="sm '+(S.set.sound?'on':'')+'" onclick="S.set.sound=!S.set.sound;save();render()">音效：'+(S.set.sound?'開':'關')+'</button></div></div>';
