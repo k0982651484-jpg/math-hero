@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>社會練習</title>
+<style>
+:root{--bg:#f4f7fb;--card:#fff;--tx:#1d2733;--mut:#6b7785;--pri:#2f6fed;--ok:#1f9d55;--no:#d64545;--ln:#dde3ec;--acc:#c9822b}
+@media(prefers-color-scheme:dark){:root{--bg:#141a22;--card:#1f2833;--tx:#e8eef5;--mut:#93a0ae;--ln:#33404f}}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.6 "PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif}
+#app{max-width:640px;margin:0 auto;padding:14px 14px 40px}
+h1{font-size:22px;margin:6px 0 2px}h2{font-size:18px;margin:14px 0 8px}
+.sub{color:var(--mut);font-size:14px;margin:0 0 10px}
+.card{background:var(--card);border:1px solid var(--ln);border-radius:14px;padding:14px;margin:10px 0}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+button,select,input{font:inherit;color:inherit}
+.btn{border:0;border-radius:12px;padding:12px 14px;background:var(--pri);color:#fff;font-weight:700;cursor:pointer}
+.btn.g{background:var(--card);color:var(--tx);border:1px solid var(--ln)}
+.btn.s{padding:6px 10px;font-size:14px;border-radius:9px}
+.gb{padding:18px 6px;font-size:20px;border-radius:14px;border:2px solid var(--acc);background:var(--card);color:var(--tx);font-weight:800;cursor:pointer}
+.gb small{display:block;font-size:12px;color:var(--mut);font-weight:400}
+.gb.off{opacity:.35;cursor:default;border-color:var(--ln)}
+.unit{display:flex;justify-content:space-between;align-items:center;width:100%;text-align:left;padding:13px 14px;margin:8px 0;border-radius:12px;border:1px solid var(--ln);background:var(--card);cursor:pointer}
+.unit b{font-size:16px}.unit span{color:var(--mut);font-size:13px}
+.star{color:#f2a900;letter-spacing:2px;white-space:nowrap}
+.bar{height:8px;background:var(--ln);border-radius:6px;overflow:hidden;margin:6px 0 14px}.bar i{display:block;height:100%;background:var(--acc);transition:width .3s}
+.q{font-size:21px;font-weight:700;line-height:1.6;margin:6px 0 14px;white-space:pre-wrap}
+.q ruby{ruby-position:over}.q rt{font-size:.5em;font-weight:400}
+.opt{display:block;width:100%;text-align:left;margin:8px 0;padding:14px;border-radius:12px;border:2px solid var(--ln);background:var(--card);font-size:18px;cursor:pointer}
+.opt.ok{border-color:var(--ok);background:rgba(31,157,85,.14)}.opt.no{border-color:var(--no);background:rgba(214,69,69,.14)}
+.fb{margin:10px 0;padding:10px 12px;border-radius:10px;font-size:15px}
+.fb.ok{background:rgba(31,157,85,.14)}.fb.no{background:rgba(214,69,69,.14)}
+.top{display:flex;justify-content:space-between;align-items:center}
+.big{font-size:56px;text-align:center;margin:6px 0}.center{text-align:center}
+.nav{font-size:13px;color:var(--mut);margin-top:18px;line-height:2}.nav a{color:var(--pri);margin-right:10px;text-decoration:none}
+.sp{flex:1}
+input[type=text]{padding:9px 10px;border-radius:9px;border:1px solid var(--ln);background:var(--card);width:130px}
+select{padding:9px 10px;border-radius:9px;border:1px solid var(--ln);background:var(--card)}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+const CFG={"key": "kids-social-v1", "title": "社會練習", "name": "社會", "sub": "依年級重點出題：家鄉、地理、歷史、公民", "lang": "zh-TW", "ver": {"3": "康軒", "4": "康軒", "5": "康軒", "6": "康軒"}, "autoRead": false, "autoMax": 0, "nav": [["數學", "./"], ["國語", "chinese.html"], ["英語", "english.html"], ["自然", "science.html"], ["社會", "social.html"], ["生活", "life.html"]], "note": "題目依年級學習重點原創編寫，未逐課對照課本；進度只存在這支手機/平板的瀏覽器，可用「匯出進度」備份。"};
+const BANK={"3":{"note":"方位與地圖、家鄉環境、居民生活、社區與公共設施、節慶與安全","units":[{"n":"方位與地圖","qs":[["太陽從哪一個方向升起？","東方","西方~南方~北方"],["面向北方，右手邊是哪一個方位？","東方","西方~南方~北方"],["面向北方，左手邊是哪一個方位？","西方","東方~南方~北方"],["地圖上，通常上方代表哪個方向？","北方","南方~東方~西方"],["地圖上的「圖例」是用來做什麼？","說明符號代表什麼","計算距離~畫圖用~標示年份"],["下列哪一個方位和「南方」相反？","北方","東方~西方~東南方"],["指南針的指針主要指向哪裡？","南北方向","東西方向~天空~太陽"],["學校在公園的東邊，那麼公園在學校的哪一邊？","西邊","東邊~南邊~北邊"]]},{"n":"家鄉的環境","qs":[["下列哪一種是地形？","平原","颱風~下雨~白天"],["地勢高低起伏很大、坡度陡峭的地方，通常是哪一種地形？","山地","平原~海邊~池塘"],["適合種稻、種菜，面積廣大平坦的地方，通常是哪一種地形？","平原","高山~峭壁~礁石"],["靠近海邊的居民，常見的工作可能是？","捕魚或養殖","種茶~伐木~開採礦石"],["山區的居民，常見的工作可能是？","種茶、種水果","捕魚~曬鹽~養殖文蛤"],["臺灣最長的山脈叫做？","中央山脈","玉山山脈~海岸山脈~雪山山脈","中央山脈縱貫臺灣南北，是最長的山脈。"],["下列哪一種是自然環境（不是人蓋的）？","河流","公路~房子~橋"],["下列哪一種是人文環境（人造出來的）？","公路","河流~山~海"]]},{"n":"居民與生活","qs":[["居民和居民之間要怎麼相處才好？","互相幫助、互相尊重","互相比較~互相吵鬧~不要往來"],["鄰居家有事需要幫忙，我們可以怎麼做？","主動關心、提供協助","當作沒看到~大聲嘲笑~躲起來"],["居住在同一個地方的人，會一起生活形成什麼？","社區","學校~工廠~車站"],["我們家附近的垃圾要怎麼處理？","按規定分類並在指定時間丟","隨手丟在路邊~丟給鄰居~燒掉"]]},{"n":"公共設施與安全","qs":[["下列哪一個是「公共設施」？","公園","自己家的客廳~私人汽車~朋友的書包"],["使用公共設施時，應該怎麼做？","愛惜、遵守規定","想怎麼用就怎麼用~破壞它~占為己有"],["發現公共設施壞了，可以怎麼做？","通知相關單位修理","假裝沒看見~故意弄壞~自己拆掉"],["警察局主要負責什麼？","維護治安、保護民眾","看病~賣書~蓋房子"],["消防隊主要負責什麼？","滅火和救災救護","修馬路~送信~教書"],["發生火災時，應該撥打哪個電話？","119","110~104~165"],["遇到壞人或需要警察幫忙，應該撥打哪個電話？","110","119~104~165"],["過馬路要走哪裡？","斑馬線、等綠燈","隨便穿越~車子少就跑過去~圍欄的缺口"]]},{"n":"節慶與習俗","qs":[["農曆正月初一是什麼節日？","春節","端午節~中秋節~元宵節"],["端午節有什麼習俗？","吃粽子、划龍舟","吃月餅~放天燈~發紅包"],["中秋節有什麼習俗？","賞月、吃月餅","吃粽子~划龍舟~掃墓"],["元宵節（正月十五）有什麼習俗？","賞燈、吃湯圓","吃粽子~賞月餅~划龍舟"],["放鞭炮或煙火時，最重要的是？","注意安全、遠離人群","越近越好~朝別人丟~在室內放"]]}]},"4":{"note":"臺灣的位置與地形、氣候、行政區、居民與產業、歷史","units":[{"n":"位置與地形","qs":[["臺灣位在哪一個大洲的東邊海域？","亞洲","歐洲~非洲~南美洲"],["臺灣的最高峰是？","玉山","阿里山~雪山~合歡山"],["臺灣最長的河流是？","濁水溪","淡水河~高屏溪~曾文溪"],["臺灣最大的自然湖泊是？","日月潭","澄清湖~翡翠水庫~鯉魚潭"],["臺灣面積最大的平原是？","嘉南平原","臺北盆地~蘭陽平原~屏東平原"],["臺灣的地形特色是？","山多平原少，東高西低","全是平原~只有高山~全是沙漠"],["臺灣周圍的島嶼中，下列哪一個是離島？","澎湖","臺北~臺中~臺南"],["臺灣的西邊隔著臺灣海峽與哪裡相對？","中國大陸","日本~菲律賓~韓國"],["臺灣的東邊是哪一個大洋？","太平洋","大西洋~印度洋~北冰洋"]]},{"n":"氣候與災害","qs":[["臺灣位在北回歸線附近，氣候大部分屬於什麼？","亞熱帶、熱帶氣候","寒帶氣候~乾燥氣候~極地氣候"],["臺灣夏天的特色是？","炎熱多雨","寒冷乾燥~下雪~乾燥少雨"],["臺灣冬天（北部）常有什麼天氣？","較冷、東北季風帶來雨","非常熱~下大雪~沙塵暴"],["臺灣常見的天然災害是？","颱風、地震、土石流","暴風雪和沙塵暴~極光和冰河~海冰和冰山"],["颱風季節主要在哪些月份？","夏、秋季","冬季~春季~全年都沒有"],["遇到地震，在室內正確的做法是？","趴下、掩護、穩住","搭電梯~往外衝~站在窗邊"]]},{"n":"行政區與居民","qs":[["臺灣有幾個直轄市？（目前）","六個","三個~十個~十二個"],["下列哪一個是直轄市？","臺中市","花蓮縣~苗栗縣~宜蘭縣"],["面積最大的縣市是？","花蓮縣","臺北市~高雄市~臺南市"],["臺灣的原住民族中，主要分布在花蓮、臺東的有哪一個族群？","阿美族","達悟族~賽夏族~邵族"],["居住在蘭嶼的是哪一族？","達悟族（雅美族）","阿美族~泰雅族~排灣族"],["臺灣有哪四大族群？","原住民、閩南人、客家人、外省人（新住民另計）","漢人、蒙古人、苗人、回人~臺北人、高雄人、花蓮人、臺東人~漁民、農民、工人、商人"],["我們應該如何對待不同族群的人？","互相尊重、欣賞彼此的文化","看不起不同文化~只跟自己人往來~要求別人改變"]]},{"n":"產業","qs":[["下列哪一種工作屬於「農業」？","種稻","蓋房子~當護理師~賣手機"],["下列哪一種工作屬於「漁業」？","養殖與捕魚","種茶~開計程車~當老師"],["工廠把原料做成產品，屬於哪一類產業？","工業","農業~漁業~林業"],["百貨公司、餐廳、醫院這些服務性的工作屬於？","服務業","農業~工業~林業"],["臺灣的稻米主要產地在哪一種地形？","平原","高山~海中~沙漠"]]},{"n":"歷史","qs":[["最早居住在臺灣的人是？","原住民","荷蘭人~日本人~英國人"],["荷蘭人在臺灣南部（臺南）建立了什麼據點？","熱蘭遮城（安平古堡）","臺北城~億載金城~鹿港龍山寺"],["把荷蘭人趕出臺灣的是誰？","鄭成功","劉銘傳~沈葆楨~施琅"],["「古蹟」的意義是什麼？","有歷史價值、值得保存的建築或遺跡","剛蓋好的房子~很大的房子~很貴的房子"],["遇到古蹟，我們應該怎麼做？","愛護，不亂塗鴉、不破壞","在上面塗鴉~刻名字~帶走一部分"]]}]},"5":{"note":"臺灣歷史（原住民到現代）、臺灣區域與交通、資源與產業","units":[{"n":"早期臺灣","qs":[["臺灣最早的居民是？","原住民族","荷蘭人~日本人~漢人移民"],["1624 年，荷蘭人在臺灣的哪一個地方建立據點？","臺南安平","臺北淡水~高雄左營~花蓮港"],["西班牙人曾經占領臺灣的哪個地區？","北部（基隆、淡水一帶）","南部屏東~東部花蓮~澎湖"],["西元 1661 年，鄭成功趕走了哪一國的人？","荷蘭人","西班牙人~日本人~英國人"],["鄭成功在臺灣推行什麼？","屯田（開墾土地）與設立行政制度","蓋鐵路~開辦大學~興建高速公路"]]},{"n":"清朝與日本時代","qs":[["清朝在哪一年把臺灣納入版圖？（西元）","1683 年","1624 年~1895 年~1945 年"],["清朝時期，臺灣的漢人移民主要來自哪裡？","福建、廣東","日本、韓國~俄羅斯、蒙古~美國、英國"],["清朝時，臺灣第一任巡撫是誰？","劉銘傳","鄭成功~沈葆楨~施琅"],["劉銘傳在臺灣推動了哪些建設？","鐵路、電報、郵政","高速公路~捷運~網路"],["1895 年，清朝因為戰敗而把臺灣割讓給哪一國？","日本","荷蘭~俄羅斯~英國"],["日本統治臺灣時期，興建了哪些重要建設？","縱貫鐵路、基隆港等","高速公路、機場~捷運、高鐵~海底隧道"],["臺灣在西元哪一年結束日本統治？","1945 年","1895 年~1949 年~1987 年"]]},{"n":"臺灣各區域","qs":[["臺灣分成北部、中部、南部、東部和離島等區域，下列哪一個縣市在東部？","花蓮縣","嘉義縣~新竹縣~屏東縣"],["連接臺北與高雄，最快的鐵路運輸是？","高鐵（高速鐵路）","普通火車~捷運~公車"],["臺灣有哪些重要的海港？","高雄港、基隆港、臺中港","桃園港、新北港~南投港、苗栗港~玉山港、阿里山港"],["臺灣主要的國際機場在哪個縣市？","桃園市","花蓮縣~南投縣~宜蘭縣"]]},{"n":"資源與產業","qs":[["下列哪一種是「再生資源」？","太陽能","煤炭~石油~天然氣"],["臺灣缺少石油，大多需要怎麼取得？","從國外進口","自己挖~從海裡撈~空氣中取得"],["臺灣以哪一類產業最發達？","電子資訊（科技）產業","採礦業~畜牧業~林業"],["資源有限，我們應該怎麼做？","節約使用、做好回收","想用多少就用多少~能用就丟~把資源賣光"],["下列哪一種做法可以幫助環保？","使用環保杯、環保袋","一次性餐具~開車去附近商店~冷氣一直開"]]},{"n":"現代與民主","qs":[["臺灣的「國慶日」是哪一天？","十月十日","五月一日~一月一日~七月七日"],["臺灣的現行憲法是什麼？","中華民國憲法","馬關條約~大清律例~約法三章"],["下列哪一項是民主社會的特色？","尊重多數也保護少數","只聽一個人的話~不可以表達意見~凡事都用打架解決"]]}]},"6":{"note":"公民（民主、法律、權利義務）、經濟、世界地理、國際與永續","units":[{"n":"民主與法律","qs":[["中華民國國民滿法定年齡後，擁有哪一種重要的政治權利？","投票權","免繳稅的權利~不用上學的權利~決定別人薪水的權利"],["中華民國的總統任期是幾年？","四年","二年~六年~八年"],["地方首長（如縣市長）是怎麼產生的？","人民投票選出","總統指定~抽籤~世襲"],["制定法律的機關是？","立法院","行政院~司法院~監察院"],["負責審判案件的是？","法院","立法院~行政院~學校"],["法律的目的是什麼？","維持社會秩序、保障人民權利","限制人民自由~只管有錢人~讓人害怕"],["權利與義務的關係是？","享有權利，也要盡義務","只有權利沒有義務~只有義務沒有權利~兩者無關"],["下列哪一項是國民的義務？","依法納稅","投票選總統~參加遊行~買東西"],["下列哪一項是人民的權利？","言論自由","依法納稅~服兵役~遵守法律","人民可以表達自己的意見，這是權利。"]]},{"n":"經濟與消費","qs":[["消費者買到有問題的商品，可以向哪裡申訴？","政府的消費者保護單位","學校老師~鄰居~市場攤商"],["購物時，聰明的消費者應該怎麼做？","比較價格和品質，買需要的東西","看到喜歡的就買~只買最貴的~只看包裝"],["「儲蓄」的意思是？","把一部分錢存起來，不一次花完","把錢全部花掉~借錢~丟掉錢"],["「需要」和「想要」，應該先滿足哪一個？","需要","想要~都不用~先買想要的"],["商人賣東西賺到的錢，扣掉成本後剩下的叫做？","利潤","稅金~薪水~零用錢"]]},{"n":"世界地理","qs":[["地球上最大的洲是？","亞洲","非洲~歐洲~南美洲"],["地球上最大的海洋是？","太平洋","大西洋~印度洋~北冰洋"],["面積最大的國家是？","俄羅斯","加拿大~中國~美國"],["世界七大洲包括亞洲、非洲、歐洲、北美洲、南美洲、大洋洲和什麼？","南極洲","北極洲~中美洲~西亞洲"],["埃及的金字塔位在哪一個洲？","非洲","亞洲~歐洲~南美洲"],["日本位在哪一個洲？","亞洲","歐洲~非洲~大洋洲"],["澳洲位在哪一個洲？","大洋洲","亞洲~非洲~北美洲"]]},{"n":"國際與永續","qs":[["下列哪一個是國際組織？","聯合國","教育部~消防局~臺北市政府"],["聯合國的主要目標是？","維護世界和平","發動戰爭~比賽賺錢~統一語言"],["「地球村」的意思是？","世界各地的聯繫越來越密切","地球上只有一個村~所有人住在同一個村~所有人說同一種語言"],["愛護地球的做法，下列哪一個正確？","減少垃圾、節約能源","多用一次性餐具~常開車不搭公車~隨手丟垃圾"],["人人享有平等的權利，不因性別、種族、宗教而被歧視。這是什麼精神？","人權","歧視~競爭~比賽"],["看到有人被欺負，我們可以怎麼做？","勇敢告訴老師或大人尋求協助","跟著一起欺負~假裝沒看到~笑他"]]}]}};
+const $=s=>document.querySelector(s);
+const ST=n=>'★'.repeat(n)+'☆'.repeat(3-n);
+function sh(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a}
+/* ---------- 儲存 ---------- */
+let DB;
+function load(){try{DB=JSON.parse(localStorage.getItem(CFG.key))}catch(e){DB=null}
+ if(!DB||!DB.profiles)DB={cur:'小朋友',auto:true,profiles:{'小朋友':{prog:{},wrong:[],total:0}}};}
+function save(){try{localStorage.setItem(CFG.key,JSON.stringify(DB))}catch(e){}}
+const P=()=>DB.profiles[DB.cur];
+/* ---------- 朗讀 ---------- */
+function say(t,l){try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(String(t).replace(/<[^>]+>/g,''));u.lang=l||CFG.lang;u.rate=.85;speechSynthesis.speak(u)}catch(e){}}
+/* ---------- 題目產生 ---------- */
+function enOnly(t){if(CFG.lang!=='en-US')return t;const s=t.replace(/[\u2E80-\u9FFF\uFF00-\uFFEF\u3000-\u303F]/g,' ').replace(/\s+/g,' ').trim();return /[A-Za-z]{2,}/.test(s)||/^[A-Za-z]$/.test(s)?s:''}
+function mkItem(it,g,u){
+ if(it[1]==='○'||it[1]==='✕')return{q:it[0],c:it[1]==='○'?'○ 對':'✕ 錯',w:[it[1]==='○'?'✕ 錯':'○ 對'],tf:1,exp:it[2]||'',g,u,say:enOnly(it[0]),lang:CFG.lang};
+ return{q:it[0],c:it[1],w:it[2].split('~'),exp:it[3]||'',g,u,say:enOnly(it[0]),lang:CFG.lang};}
+function pick(arr,n,ex){const o=[];for(const x of sh(arr)){if(x!==ex&&!o.includes(x))o.push(x);if(o.length>=n)break}return o}
+function genPairs(pp,g,u){
+ const out=[];const items=pp.items;
+ for(const it of items){
+  const dirs=['f'];if(pp.r)dirs.push('r');if(pp.l)dirs.push('l');
+  const d=dirs[Math.random()*dirs.length|0];
+  const A=it[0],B=it[1],ex=it[2]||'';
+  if(d==='f'){out.push({q:pp.f.replace('{a}',A).replace('{b}',B),c:B,w:pick(items.map(x=>x[1]),3,B),exp:ex||(A+' = '+B),g,u,say:A,lang:pp.lang||CFG.lang})}
+  else if(d==='r'){out.push({q:pp.r.replace('{a}',A).replace('{b}',B),c:A,w:pick(items.map(x=>x[0]),3,A),exp:ex||(A+' = '+B),g,u,say:CFG.lang==='en-US'?'':B,lang:CFG.lang})}
+  else{out.push({q:'🔊 聽聽看，這是哪個單字？',c:A,w:pick(items.map(x=>x[0]),3,A),exp:A+' = '+B,g,u,say:A,lang:pp.lang||CFG.lang,listen:1})}
+ }return out;}
+function unitPool(g,ui){const u=BANK[g].units[ui];let p=(u.qs||[]).map(it=>mkItem(it,g,u.n));if(u.pairs)p=p.concat(genPairs(u.pairs,g,u.n));return p}
+function inst(x){const o=x.tf?['○ 對','✕ 錯']:sh([x.c,...x.w]);return Object.assign({},x,{opts:o,a:o.indexOf(x.c)})}
+/* ---------- 狀態 ---------- */
+let S=null;
+/* ---------- 畫面 ---------- */
+function navHtml(){return '<div class="nav">其他科目：'+CFG.nav.map(n=>'<a href="'+n[1]+'">'+n[0]+'</a>').join('')+'</div>'}
+function home(){
+ S=null;const names=Object.keys(DB.profiles);
+ let h='<h1>'+CFG.title+'</h1><p class="sub">'+CFG.sub+'</p>';
+ h+='<div class="card"><div class="row"><span>👤</span><select id="pf">'+names.map(n=>'<option'+(n===DB.cur?' selected':'')+'>'+n+'</option>').join('')+'</select><button class="btn g s" id="addp">＋新增小朋友</button><span class="sp"></span><span class="star">累積答對 '+P().total+' 題</span></div></div>';
+ h+='<h2>選擇年級</h2><div class="grid">';
+ for(let g=1;g<=6;g++){const ok=!!BANK[g];h+='<button class="gb'+(ok?'':' off')+'" data-g="'+g+'">'+g+' 年級<small>'+(ok?CFG.ver[g]||'':'—')+'</small></button>'}
+ h+='</div>';
+ const wn=P().wrong.length;
+ if(wn)h+='<div class="card row"><b>📝 錯題本：'+wn+' 題</b><span class="sp"></span><button class="btn s" id="wr">重練錯題</button></div>';
+ h+='<div class="card"><div class="row"><label><input type="checkbox" id="auto"'+(DB.auto?' checked':'')+'> 低年級自動朗讀題目</label></div><div class="row" style="margin-top:10px"><button class="btn g s" id="ex">匯出進度</button><button class="btn g s" id="im">匯入進度</button><button class="btn g s" id="rs">清除這位進度</button><input type="file" id="fi" accept=".json" style="display:none"></div></div>';
+ h+='<p class="sub">'+CFG.note+'</p>'+navHtml();
+ $('#app').innerHTML=h;
+ $('#pf').onchange=e=>{DB.cur=e.target.value;save();home()};
+ $('#addp').onclick=()=>{const n=(prompt('小朋友的名字：')||'').trim();if(!n)return;if(!DB.profiles[n])DB.profiles[n]={prog:{},wrong:[],total:0};DB.cur=n;save();home()};
+ document.querySelectorAll('.gb').forEach(b=>b.onclick=()=>{if(BANK[+b.dataset.g])grade(+b.dataset.g)});
+ const w=$('#wr');if(w)w.onclick=()=>start(sh(P().wrong).slice(0,10),'錯題重練',null);
+ $('#auto').onchange=e=>{DB.auto=e.target.checked;save()};
+ $('#ex').onclick=()=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(DB)],{type:'application/json'}));a.download=CFG.key+'-backup.json';a.click()};
+ $('#im').onclick=()=>$('#fi').click();
+ $('#fi').onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);if(!d.profiles)throw 0;DB=d;save();home();alert('匯入完成')}catch(x){alert('檔案格式不正確')}};r.readAsText(f)};
+ $('#rs').onclick=()=>{if(confirm('確定清除「'+DB.cur+'」的所有進度？')){DB.profiles[DB.cur]={prog:{},wrong:[],total:0};save();home()}};
+}
+function grade(g){
+ S=null;const B=BANK[g];
+ let h='<div class="top"><button class="btn g s" id="bk">← 返回</button><span class="star">'+DB.cur+'</span></div><h1>'+g+' 年級 '+CFG.name+'</h1><p class="sub">'+(B.note||'')+'</p>';
+ B.units.forEach((u,i)=>{const pr=P().prog[g+'|'+u.n];const b=pr?pr.best:0;const n=unitPool(g,i).length;
+  h+='<button class="unit" data-i="'+i+'"><div><b>'+u.n+'</b><br><span>'+n+' 題'+(pr?'・玩過 '+pr.plays+' 次':'')+'</span></div><span class="star">'+ST(b>=9?3:b>=7?2:b>=5?1:0)+'</span></button>'});
+ h+='<button class="unit" data-i="-1"><div><b>🎲 全部混合</b><br><span>從所有單元隨機抽 10 題</span></div></button>'+navHtml();
+ $('#app').innerHTML=h;$('#bk').onclick=home;
+ document.querySelectorAll('.unit').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;
+  if(i<0){let all=[];B.units.forEach((u,k)=>all=all.concat(unitPool(g,k)));start(sh(all).slice(0,10),g+' 年級 混合',{g,u:'混合'})}
+  else start(sh(unitPool(g,i)).slice(0,10),B.units[i].n,{g,u:B.units[i].n})});
+}
+function start(pool,title,meta){
+ if(!pool.length){alert('沒有題目');return home()}
+ S={list:pool.map(inst),i:0,ok:0,title,meta,done:false};show();
+}
+function show(){
+ const x=S.list[S.i];S.done=false;
+ let h='<div class="top"><button class="btn g s" id="bk">← 離開</button><span class="sub" style="margin:0">'+S.title+'　'+(S.i+1)+' / '+S.list.length+'</span></div>';
+ h+='<div class="bar"><i style="width:'+(S.i/S.list.length*100)+'%"></i></div><div class="card"><div class="q" id="qt">'+x.q+'</div>';
+ if(x.say)h+='<div class="row" style="margin-bottom:6px"><button class="btn g s" id="sp">🔊 朗讀</button></div>';
+ x.opts.forEach((o,k)=>h+='<button class="opt" data-k="'+k+'">'+o+'</button>');
+ h+='<div id="fb"></div></div>';
+ $('#app').innerHTML=h;
+ $('#bk').onclick=()=>{if(confirm('離開這回練習？'))home()};
+ if($('#sp'))$('#sp').onclick=()=>say(x.say,x.lang);
+ document.querySelectorAll('.opt').forEach(b=>b.onclick=()=>ans(+b.dataset.k));
+ if(x.say&&(x.listen||(DB.auto&&CFG.autoRead&&x.g<=CFG.autoMax)))setTimeout(()=>say(x.say,x.lang),250);
+}
+function ans(k){
+ if(S.done)return;S.done=true;const x=S.list[S.i];const right=k===x.a;
+ document.querySelectorAll('.opt').forEach((b,j)=>{if(j===x.a)b.classList.add('ok');else if(j===k)b.classList.add('no')});
+ const p=P();const key=x.q+'|'+x.c;
+ if(right){S.ok++;p.total++;p.wrong=p.wrong.filter(w=>w.q+'|'+w.c!==key)}
+ else if(!p.wrong.some(w=>w.q+'|'+w.c===key)){p.wrong.push({q:x.q,c:x.c,w:x.w,exp:x.exp,g:x.g,u:x.u,tf:x.tf,say:x.say,lang:x.lang,listen:x.listen});if(p.wrong.length>80)p.wrong.shift()}
+ save();
+ const last=S.i===S.list.length-1;
+ let f='<div class="fb '+(right?'ok':'no')+'">'+(right?'✅ 答對了！':'❌ 正確答案：<b>'+x.c+'</b>')+(x.exp?'<br>'+x.exp:'')+'</div>';
+ f+='<button class="btn" id="nx" style="width:100%">'+(last?'看結果':'下一題')+'</button>';
+ $('#fb').innerHTML=f;$('#nx').onclick=next;
+ if(x.listen&&x.say)say(x.say,x.lang);
+}
+function next(){S.i++;if(S.i>=S.list.length)return result();show()}
+function result(){
+ const n=S.list.length,ok=S.ok,m=S.meta;
+ if(m){const key=m.g+'|'+m.u;const pr=P().prog[key]||{best:0,plays:0};pr.plays++;if(ok>pr.best)pr.best=ok;P().prog[key]=pr;save()}
+ const s=ok>=n*.9?3:ok>=n*.7?2:ok>=n*.5?1:0;
+ const msg=['再接再厲，錯的題目已放進錯題本！','不錯喔，再練一次會更好！','很棒！快滿分了！','太厲害了！'][s];
+ let h='<div class="card center"><div class="big">'+['💪','🙂','🎉','🏆'][s]+'</div><h1>答對 '+ok+' / '+n+'</h1><div class="star" style="font-size:30px">'+ST(s)+'</div><p>'+msg+'</p>';
+ h+='<div class="row" style="justify-content:center"><button class="btn" id="ag">再來一回</button><button class="btn g" id="hm">回首頁</button></div></div>';
+ $('#app').innerHTML=h;
+ $('#hm').onclick=home;
+ $('#ag').onclick=()=>{if(m&&m.u!=='混合'){const g=m.g;const ui=BANK[g].units.findIndex(u=>u.n===m.u);start(sh(unitPool(g,ui)).slice(0,10),S.title,m)}else if(m){grade(m.g)}else home()};
+ S=null;
+}
+load();home();
+</script>
+</body>
+</html>

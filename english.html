@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>英語練習</title>
+<style>
+:root{--bg:#f4f7fb;--card:#fff;--tx:#1d2733;--mut:#6b7785;--pri:#2f6fed;--ok:#1f9d55;--no:#d64545;--ln:#dde3ec;--acc:#2f9e8f}
+@media(prefers-color-scheme:dark){:root{--bg:#141a22;--card:#1f2833;--tx:#e8eef5;--mut:#93a0ae;--ln:#33404f}}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.6 "PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif}
+#app{max-width:640px;margin:0 auto;padding:14px 14px 40px}
+h1{font-size:22px;margin:6px 0 2px}h2{font-size:18px;margin:14px 0 8px}
+.sub{color:var(--mut);font-size:14px;margin:0 0 10px}
+.card{background:var(--card);border:1px solid var(--ln);border-radius:14px;padding:14px;margin:10px 0}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+button,select,input{font:inherit;color:inherit}
+.btn{border:0;border-radius:12px;padding:12px 14px;background:var(--pri);color:#fff;font-weight:700;cursor:pointer}
+.btn.g{background:var(--card);color:var(--tx);border:1px solid var(--ln)}
+.btn.s{padding:6px 10px;font-size:14px;border-radius:9px}
+.gb{padding:18px 6px;font-size:20px;border-radius:14px;border:2px solid var(--acc);background:var(--card);color:var(--tx);font-weight:800;cursor:pointer}
+.gb small{display:block;font-size:12px;color:var(--mut);font-weight:400}
+.gb.off{opacity:.35;cursor:default;border-color:var(--ln)}
+.unit{display:flex;justify-content:space-between;align-items:center;width:100%;text-align:left;padding:13px 14px;margin:8px 0;border-radius:12px;border:1px solid var(--ln);background:var(--card);cursor:pointer}
+.unit b{font-size:16px}.unit span{color:var(--mut);font-size:13px}
+.star{color:#f2a900;letter-spacing:2px;white-space:nowrap}
+.bar{height:8px;background:var(--ln);border-radius:6px;overflow:hidden;margin:6px 0 14px}.bar i{display:block;height:100%;background:var(--acc);transition:width .3s}
+.q{font-size:21px;font-weight:700;line-height:1.6;margin:6px 0 14px;white-space:pre-wrap}
+.q ruby{ruby-position:over}.q rt{font-size:.5em;font-weight:400}
+.opt{display:block;width:100%;text-align:left;margin:8px 0;padding:14px;border-radius:12px;border:2px solid var(--ln);background:var(--card);font-size:18px;cursor:pointer}
+.opt.ok{border-color:var(--ok);background:rgba(31,157,85,.14)}.opt.no{border-color:var(--no);background:rgba(214,69,69,.14)}
+.fb{margin:10px 0;padding:10px 12px;border-radius:10px;font-size:15px}
+.fb.ok{background:rgba(31,157,85,.14)}.fb.no{background:rgba(214,69,69,.14)}
+.top{display:flex;justify-content:space-between;align-items:center}
+.big{font-size:56px;text-align:center;margin:6px 0}.center{text-align:center}
+.nav{font-size:13px;color:var(--mut);margin-top:18px;line-height:2}.nav a{color:var(--pri);margin-right:10px;text-decoration:none}
+.sp{flex:1}
+input[type=text]{padding:9px 10px;border-radius:9px;border:1px solid var(--ln);background:var(--card);width:130px}
+select{padding:9px 10px;border-radius:9px;border:1px solid var(--ln);background:var(--card)}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+const CFG={"key": "kids-english-v1", "title": "英語練習", "name": "英語", "sub": "單字、聽力、句型、文法（點 🔊 聽發音）", "lang": "en-US", "ver": {}, "autoRead": false, "autoMax": 0, "nav": [["數學", "./"], ["國語", "chinese.html"], ["英語", "english.html"], ["自然", "science.html"], ["社會", "social.html"], ["生活", "life.html"]], "note": "題目依年級學習重點原創編寫，未逐課對照課本；進度只存在這支手機/平板的瀏覽器，可用「匯出進度」備份。"};
+const BANK={"1":{"note":"字母、顏色、數字、動物、打招呼（點 🔊 聽發音）","units":[{"n":"字母大小寫","qs":[["英文字母 A 的後面是哪一個字母？","B","C~D~Z"],["英文字母 C 的後面是哪一個字母？","D","B~E~F"],["英文字母 M 的前面是哪一個字母？","L","N~K~O"],["英文字母 Z 是第幾個字母？","最後一個","第一個~第二十個~第二十五個"]],"pairs":{"items":[["A","a"],["B","b"],["C","c"],["D","d"],["E","e"],["F","f"],["G","g"],["H","h"],["I","i"],["J","j"],["K","k"],["L","l"],["M","m"],["N","n"],["O","o"],["P","p"],["Q","q"],["R","r"],["S","s"],["T","t"],["U","u"],["V","v"],["W","w"],["X","x"],["Y","y"],["Z","z"]],"f":"大寫「{a}」的小寫是哪一個？","r":"小寫「{b}」的大寫是哪一個？"}},{"n":"顏色","qs":[["天空通常是什麼顏色？","blue","red~black~brown"],["香蕉通常是什麼顏色？","yellow","purple~blue~pink"],["草是什麼顏色？","green","red~white~orange"]],"pairs":{"items":[["red","紅色"],["blue","藍色"],["yellow","黃色"],["green","綠色"],["black","黑色"],["white","白色"],["pink","粉紅色"],["orange","橘色"],["purple","紫色"],["brown","咖啡色"]],"f":"「{a}」的中文是什麼？","r":"「{b}」的英文怎麼說？","l":1}},{"n":"數字 1-10","qs":[["1 ＋ 1 ＝ ？（用英文選）","two","one~three~four"],["2 ＋ 3 ＝ ？（用英文選）","five","four~six~seven"],["10 － 5 ＝ ？（用英文選）","five","four~six~nine"]],"pairs":{"items":[["one","1"],["two","2"],["three","3"],["four","4"],["five","5"],["six","6"],["seven","7"],["eight","8"],["nine","9"],["ten","10"]],"f":"「{a}」是數字多少？","r":"數字「{b}」的英文怎麼說？","l":1}},{"n":"動物","qs":[],"pairs":{"items":[["dog","狗"],["cat","貓"],["bird","鳥"],["fish","魚"],["pig","豬"],["cow","牛"],["duck","鴨子"],["rabbit","兔子"],["elephant","大象"],["monkey","猴子"],["tiger","老虎"],["lion","獅子"]],"f":"「{a}」的中文是什麼？","r":"「{b}」的英文怎麼說？","l":1}},{"n":"打招呼","qs":[["「Hello」是什麼意思？","你好","再見~謝謝~對不起"],["「Goodbye」是什麼意思？","再見","你好~謝謝~請"],["「Thank you」是什麼意思？","謝謝","對不起~再見~請"],["「Sorry」是什麼意思？","對不起","謝謝~你好~再見"],["「Please」是什麼意思？","請","謝謝~對不起~再見"],["早上見面時說什麼？","Good morning.","Good night.~Good afternoon.~Goodbye."],["晚上睡覺前說什麼？","Good night.","Good morning.~Hello.~Thank you."],["別人對你說「Thank you.」，你可以說什麼？","You're welcome.","I'm sorry.~Good night.~See you."],["別人問「How are you?」，你可以說什麼？","I'm fine, thank you.","My name is Amy.~I'm eight.~Good morning."],["別人問「What's your name?」，你可以說什麼？","My name is Amy.","I'm fine.~Thank you.~It's red."]]}]},"2":{"note":"水果、身體、家人、形容詞、簡單句子（點 🔊 聽發音）","units":[{"n":"水果","qs":[],"pairs":{"items":[["apple","蘋果"],["banana","香蕉"],["grape","葡萄"],["watermelon","西瓜"],["strawberry","草莓"],["mango","芒果"],["pineapple","鳳梨"],["peach","桃子"],["lemon","檸檬"],["orange","柳橙"]],"f":"「{a}」的中文是什麼？","r":"「{b}」的英文怎麼說？","l":1}},{"n":"身體部位","qs":[["我們用什麼聽聲音？","ears","eyes~nose~hands"],["我們用什麼看東西？","eyes","ears~mouth~feet"],["我們用什麼聞味道？","nose","ears~eyes~hand"]],"pairs":{"items":[["head","頭"],["eye","眼睛"],["ear","耳朵"],["nose","鼻子"],["mouth","嘴巴"],["hand","手"],["foot","腳"],["leg","腿"],["arm","手臂"],["hair","頭髮"]],"f":"「{a}」的中文是什麼？","r":"「{b}」的英文怎麼說？","l":1}},{"n":"家人","qs":[],"pairs":{"items":[["father","爸爸"],["mother","媽媽"],["brother","兄弟（哥哥或弟弟）"],["sister","姊妹（姊姊或妹妹）"],["grandpa","爺爺或外公"],["grandma","奶奶或外婆"],["baby","嬰兒"],["family","家庭"]],"f":"「{a}」的中文是什麼？","r":"「{b}」的英文怎麼說？","l":1}},{"n":"形容詞","qs":[],"pairs":{"items":[["big","大的"],["small","小的"],["tall","高的"],["short","矮的"],["long","長的"],["happy","快樂的"],["sad","難過的"],["hot","熱的"],["cold","冷的"],["fast","快的"],["slow","慢的"]],"f":"「{a}」的中文是什麼？","r":"「{b}」的英文怎麼說？","l":1}},{"n":"簡單句子","qs":[["What is this? It's a (　). （看到一隻狗）","dog","cat~pig~bird"],["What color is it? It's (　). （看到一顆紅蘋果）","red","blue~black~purple"],["How many apples? （看到 3 個蘋果）","Three apples.","Two apples.~Four apples.~One apple."],["I (　) a boy.","am","is~are~be"],["You (　) a girl.","are","am~is~be"],["She (　) my sister.","is","am~are~be"],["This is (　) apple.","an","a~the~two","apple 的第一個字母是母音，要用 an。"],["This is (　) dog.","a","an~the~two"],["Do you like bananas? 肯定回答是？","Yes, I do.","No, I don't.~Yes, I am.~Yes, it is."],["I like (　). （我喜歡貓）","cats","cat is~a cats~cat am"],["Stand up 是什麼意思？","站起來","坐下~安靜~舉手"],["Sit down 是什麼意思？","坐下","站起來~跑步~開門"]]}]},"3":{"note":"文具、食物、數字 11-20、問候與基本句型（點 🔊 聽發音）","units":[{"n":"學用品","qs":[],"pairs":{"items":[["pencil","鉛筆"],["pen","原子筆"],["eraser","橡皮擦"],["ruler","尺"],["book","書"],["bag","書包"],["desk","書桌"],["chair","椅子"],["crayon","蠟筆"],["notebook","筆記本"],["scissors","剪刀"],["glue","膠水"]],"f":"「{a}」的中文是什麼？","r":"「{b}」的英文怎麼說？","l":1}},{"n":"食物與飲料","qs":[],"pairs":{"items":[["rice","米飯"],["noodles","麵條"],["bread","麵包"],["milk","牛奶"],["egg","蛋"],["juice","果汁"],["cake","蛋糕"],["soup","湯"],["hamburger","漢堡"],["pizza","披薩"],["water","水"],["candy","糖果"]],"f":"「{a}」的中文是什麼？","r":"「{b}」的英文怎麼說？","l":1}},{"n":"數字 11-20","qs":[["10 ＋ 5 ＝ ？（用英文選）","fifteen","fourteen~sixteen~fifty"],["20 － 8 ＝ ？（用英文選）","twelve","eleven~thirteen~twenty"]],"pairs":{"items":[["eleven","11"],["twelve","12"],["thirteen","13"],["fourteen","14"],["fifteen","15"],["sixteen","16"],["seventeen","17"],["eighteen","18"],["nineteen","19"],["twenty","20"]],"f":"「{a}」是數字多少？","r":"數字「{b}」的英文怎麼說？","l":1}},{"n":"基本句型","qs":[["What's this? 的回答是？（這是一枝鉛筆）","It's a pencil.","It's pencils.~They are a pencil.~I'm a pencil."],["Is this a pen? 肯定的回答是？","Yes, it is.","Yes, I am.~Yes, I do.~Yes, it does."],["Is this a pen? 否定的回答是？","No, it isn't.","No, I'm not.~No, I don't.~No, it doesn't."],["What color is it? 的回答是？","It's blue.","It's a blue.~They're blue.~I'm blue."],["I (　) a student.","am","is~are~be"],["He (　) my brother.","is","am~are~be"],["They (　) my friends.","are","is~am~be"],["We (　) classmates.","are","is~am~be"],["It is (　) eraser.","an","a~the~some"],["It is (　) ruler.","a","an~the~some"],["Nice to meet you. 的回答是？","Nice to meet you, too.","You're welcome.~I'm fine.~Good night."],["May I come in? 是在做什麼？","請求進入","道謝~道別~問名字"],["Can I have some water? 是在做什麼？","請求要水","問名字~道謝~道別"],["How many pencils? （看到 5 枝鉛筆）答案是？","Five pencils.","Fifth pencil.~Five pencil.~Fifty pencil."],["What's your name? 的回答是？","My name is Tom.","I'm fine.~It's a book.~I'm nine."],["How old are you? 的回答是？","I'm nine.","I'm fine.~It's red.~My name is Amy."]]}]},"4":{"note":"職業、星期月份、天氣、交通工具、現在進行式（點 🔊 聽發音）","units":[{"n":"職業","qs":[],"pairs":{"items":[["teacher","老師"],["doctor","醫生"],["nurse","護理師"],["police officer","警察"],["farmer","農夫"],["driver","司機"],["cook","廚師"],["student","學生"],["firefighter","消防員"],["pilot","飛行員"]],"f":"「{a}」的中文是什麼？","r":"「{b}」的英文怎麼說？","l":1}},{"n":"星期","qs":[["Monday 的後面是哪一天？","Tuesday","Sunday~Friday~Saturday"],["Friday 的前面是哪一天？","Thursday","Saturday~Sunday~Monday"]],"pairs":{"items":[["Monday","星期一"],["Tuesday","星期二"],["Wednesday","星期三"],["Thursday","星期四"],["Friday","星期五"],["Saturday","星期六"],["Sunday","星期日"]],"f":"「{a}」的中文是什麼？","r":"「{b}」的英文怎麼說？","l":1}},{"n":"月份","qs":[],"pairs":{"items":[["January","一月"],["February","二月"],["March","三月"],["April","四月"],["May","五月"],["June","六月"],["July","七月"],["August","八月"],["September","九月"],["October","十月"],["November","十一月"],["December","十二月"]],"f":"「{a}」的中文是什麼？","r":"「{b}」的英文怎麼說？","l":1}},{"n":"天氣與交通","qs":[["How's the weather? 的回答是？（外面下雨）","It's rainy.","It's a rain.~I'm rainy.~They're rainy."],["How do you go to school? 的回答是？（搭公車）","I go by bus.","I'm a bus.~It's a bus.~I like bus."],["What time is it? 的回答是？（現在三點整）","It's three o'clock.","It's three clock.~I'm three o'clock.~They're three o'clock."]],"pairs":{"items":[["sunny","晴朗的"],["rainy","下雨的"],["cloudy","多雲的"],["windy","有風的"],["snowy","下雪的"],["bus","公車"],["train","火車"],["bike","腳踏車"],["car","汽車"],["plane","飛機"],["ship","船"],["taxi","計程車"]],"f":"「{a}」的中文是什麼？","r":"「{b}」的英文怎麼說？","l":1}},{"n":"現在進行式與句型","qs":[["He is (　) a book. （他正在看書）","reading","read~reads~to read"],["She is (　) milk. （她正在喝牛奶）","drinking","drink~drinks~drank"],["They are (　) in the park. （他們正在公園跑步）","running","run~runs~ran"],["I am (　) TV. （我正在看電視）","watching","watch~watches~watched"],["What is he doing? 的回答是？（他在睡覺）","He is sleeping.","He sleeps a bed.~He is sleep.~He has sleeping."],["What do you want to be? 的回答是？（我想當醫生）","I want to be a doctor.","I am a doctor now.~I want be doctor.~I wants to be a doctor."],["What day is it today? 的回答是？（今天星期三）","It's Wednesday.","It's March.~It's three.~It's a Wednesday."],["When is your birthday? 的回答是？（五月十日）","It's May 10th.","It's Monday.~It's ten o'clock.~I'm ten years old."],["Is it sunny? （是的，晴天）回答是？","Yes, it is.","Yes, I am.~Yes, I do.~Yes, he is."]]}]},"5":{"note":"地點、介系詞、動作、can / 第三人稱單數 / 疑問句（點 🔊 聽發音）","units":[{"n":"地點","qs":[],"pairs":{"items":[["library","圖書館"],["park","公園"],["hospital","醫院"],["school","學校"],["supermarket","超級市場"],["post office","郵局"],["restaurant","餐廳"],["bank","銀行"],["station","車站"],["museum","博物館"],["zoo","動物園"],["bookstore","書店"]],"f":"「{a}」的中文是什麼？","r":"「{b}」的英文怎麼說？","l":1}},{"n":"介系詞與位置","qs":[["The cat is (　) the box. （貓在盒子裡面）","in","on~under~behind"],["The book is (　) the desk. （書在桌子上面）","on","in~under~next to"],["The ball is (　) the chair. （球在椅子下面）","under","on~in~at"],["The bank is (　) the post office. （銀行在郵局旁邊）","next to","under~in~on"],["The dog is (　) the tree. （狗在樹後面）","behind","in front of~under~in"],["The girl is (　) the bus stop. （女孩在公車站前面）","in front of","behind~under~inside"],["Where is the cat? 的回答是？（在桌子下面）","It's under the table.","It's a cat.~Yes, it is.~It's red."],["Where are you from? 的回答是？（我來自臺灣）","I'm from Taiwan.","I'm Taiwan.~It's Taiwan.~I go Taiwan."],["Excuse me, where is the library? 是在問什麼？","圖書館在哪裡","圖書館有幾本書~圖書館開幾點~誰在圖書館"],["Go straight 是什麼意思？","直走","左轉~右轉~停下來"],["Turn left 是什麼意思？","左轉","右轉~直走~往後退"],["Turn right 是什麼意思？","右轉","左轉~直走~往後退"]]},{"n":"動作動詞","qs":[],"pairs":{"items":[["swim","游泳"],["sing","唱歌"],["dance","跳舞"],["read","閱讀"],["draw","畫畫"],["jump","跳"],["run","跑"],["cook","煮飯"],["ride a bike","騎腳踏車"],["play basketball","打籃球"]],"f":"「{a}」的中文是什麼？","r":"「{b}」的英文怎麼說？","l":1}},{"n":"can 與一般動詞","qs":[["I (　) swim. （我會游泳）","can","am~is~are"],["She can (　). （她會唱歌）","sing","sings~singing~to sing","can 後面接原形動詞。"],["He (　) play the piano. （他不會彈鋼琴）","can't","don't can~isn't~doesn't can"],["Can you ride a bike? 肯定回答是？","Yes, I can.","Yes, I do.~Yes, I am.~Yes, it can't."],["Can you swim? 否定回答是？","No, I can't.","No, I don't.~No, I'm not.~No, I amn't."],["She (　) apples. （她喜歡蘋果）","likes","like~liking~to like","主詞是第三人稱單數（she），動詞要加 s。"],["He (　) to school by bus. （他搭公車上學）","goes","go~going~gos"],["My mother (　) dinner in the kitchen every day. （我媽媽每天在廚房煮晚餐）","cooks","cook~cooking~cooked"],["I (　) two brothers.","have","has~having~am"],["She (　) a new bag.","has","have~having~is"],["Do you like (　)? （你喜歡貓嗎）","cats","a cats~cat is~cat are"],["What does he do? 的回答是？（他是醫生）","He's a doctor.","He's doctoring.~He does a doctor.~He are a doctor."],["Does she like milk? 肯定回答是？","Yes, she does.","Yes, she do.~Yes, she is.~Yes, she likes."]]},{"n":"疑問詞","qs":[["「Who」用來問什麼？","誰","哪裡~什麼時候~為什麼"],["「Where」用來問什麼？","哪裡","誰~什麼~如何"],["「When」用來問什麼？","什麼時候","哪裡~誰~為什麼"],["「What」用來問什麼？","什麼","誰~哪裡~什麼時候"],["「Why」用來問什麼？","為什麼","什麼~誰~哪裡"],["「How many」用來問什麼？","有多少（可數的東西）","多少錢~多高~多久"],["「How much」用來問什麼？","多少錢／多少量","有幾個人~哪裡~誰"],["（　）is your teacher? — Mr. Lin.","Who","Where~When~Why"],["（　）is the museum? — It's next to the park.","Where","Who~What~Why"],["（　）do you get up? — At six o'clock.","What time","What color~How many~Who"],["（　）apples do you have? — Five.","How many","How much~What~Where"]]}]},"6":{"note":"過去式、比較級、未來式、疑問句、綜合文法（點 🔊 聽發音）","units":[{"n":"規則動詞過去式","qs":[],"pairs":{"items":[["walk","walked"],["play","played"],["watch","watched"],["clean","cleaned"],["help","helped"],["visit","visited"],["study","studied"],["stop","stopped"],["try","tried"],["like","liked"],["live","lived"],["cook","cooked"]],"f":"「{a}」的過去式是哪一個？","r":"「{b}」的原形動詞是哪一個？"}},{"n":"不規則動詞過去式","qs":[],"pairs":{"items":[["go","went"],["eat","ate"],["see","saw"],["have","had"],["buy","bought"],["make","made"],["take","took"],["come","came"],["write","wrote"],["run","ran"],["sit","sat"],["give","gave"],["drink","drank"],["get","got"]],"f":"「{a}」的過去式是哪一個？","r":"「{b}」的原形動詞是哪一個？"}},{"n":"過去式句子","qs":[["Yesterday I (　) to the park.","went","go~goes~going"],["Last night she (　) a letter.","wrote","write~writes~writing"],["We (　) TV last Sunday.","watched","watch~watches~watching"],["He (　) breakfast at seven this morning.","ate","eat~eats~eaten"],["Did you (　) lunch?","have","had~has~having","Did 後面的動詞要用原形。"],["Did she go to school yesterday? 否定回答是？","No, she didn't.","No, she doesn't.~No, she isn't.~No, she don't."],["What did you do last weekend? 的回答是？","I visited my grandma.","I visit my grandma.~I'm visiting grandma yesterday.~I will visited my grandma."],["Where did you go yesterday? 的回答是？","I went to the zoo.","I go to the zoo.~I goes to the zoo.~I going to the zoo."]]},{"n":"比較級","qs":[["Tom is (　) than Amy. （Tom 比 Amy 高）","taller","tall~tallest~more tall"],["This box is (　) than that one. （這個箱子比那個重）","heavier","heavy~heaviest~more heavy"],["My bag is (　) than yours. （我的書包比你的大）","bigger","big~biggest~more big"],["The elephant is (　) than the dog. （大象比狗大）","bigger","big~biggest~more big"],["This book is (　) than that one. （這本書比那本好）","better","good~best~gooder"]],"pairs":{"items":[["tall","taller"],["short","shorter"],["big","bigger"],["small","smaller"],["fast","faster"],["slow","slower"],["heavy","heavier"],["happy","happier"],["good","better"],["bad","worse"],["long","longer"],["hot","hotter"]],"f":"「{a}」的比較級是哪一個？"}},{"n":"未來式","qs":[["I (　) visit my grandma tomorrow.","will","did~am~was"],["She is (　) to play basketball tomorrow.","going","go~went~goes"],["We (　) have a picnic next Sunday.","will","did~has~was"],["What are you going to do this weekend? 的回答是？","I'm going to see a movie.","I saw a movie.~I see a movie yesterday.~I'm see a movie."],["Will it rain tomorrow? 肯定回答是？","Yes, it will.","Yes, it does.~Yes, it is.~Yes, it did."],["It will be (　) tomorrow. （明天會是晴天）","sunny","sun~sunnies~sunning"]]},{"n":"綜合文法","qs":[["There (　) two books on the desk.","are","is~am~be"],["There (　) a cat under the chair.","is","are~am~were"],["(　) is my pencil? — It's on the desk.","Where","Who~Why~How many"],["(　) did you come to school? — By bike.","How","Why~Who~What color"],["(　) is this bag? — It's 300 dollars.","How much","How many~How old~How long"],["Whose bag is this? 的回答是？","It's mine.","It's me.~It's I.~It's my.","mine 表示「我的」（獨立使用）。"],["I (　) my homework now. （我現在正在寫功課）","am doing","do~did~will do"],["Please (　) quiet in the library.","be","is~are~am"],["You (　) run in the hallway. （走廊不可以跑步）","mustn't","must~can~should to"]]}]}};
+const $=s=>document.querySelector(s);
+const ST=n=>'★'.repeat(n)+'☆'.repeat(3-n);
+function sh(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a}
+/* ---------- 儲存 ---------- */
+let DB;
+function load(){try{DB=JSON.parse(localStorage.getItem(CFG.key))}catch(e){DB=null}
+ if(!DB||!DB.profiles)DB={cur:'小朋友',auto:true,profiles:{'小朋友':{prog:{},wrong:[],total:0}}};}
+function save(){try{localStorage.setItem(CFG.key,JSON.stringify(DB))}catch(e){}}
+const P=()=>DB.profiles[DB.cur];
+/* ---------- 朗讀 ---------- */
+function say(t,l){try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(String(t).replace(/<[^>]+>/g,''));u.lang=l||CFG.lang;u.rate=.85;speechSynthesis.speak(u)}catch(e){}}
+/* ---------- 題目產生 ---------- */
+function enOnly(t){if(CFG.lang!=='en-US')return t;const s=t.replace(/[\u2E80-\u9FFF\uFF00-\uFFEF\u3000-\u303F]/g,' ').replace(/\s+/g,' ').trim();return /[A-Za-z]{2,}/.test(s)||/^[A-Za-z]$/.test(s)?s:''}
+function mkItem(it,g,u){
+ if(it[1]==='○'||it[1]==='✕')return{q:it[0],c:it[1]==='○'?'○ 對':'✕ 錯',w:[it[1]==='○'?'✕ 錯':'○ 對'],tf:1,exp:it[2]||'',g,u,say:enOnly(it[0]),lang:CFG.lang};
+ return{q:it[0],c:it[1],w:it[2].split('~'),exp:it[3]||'',g,u,say:enOnly(it[0]),lang:CFG.lang};}
+function pick(arr,n,ex){const o=[];for(const x of sh(arr)){if(x!==ex&&!o.includes(x))o.push(x);if(o.length>=n)break}return o}
+function genPairs(pp,g,u){
+ const out=[];const items=pp.items;
+ for(const it of items){
+  const dirs=['f'];if(pp.r)dirs.push('r');if(pp.l)dirs.push('l');
+  const d=dirs[Math.random()*dirs.length|0];
+  const A=it[0],B=it[1],ex=it[2]||'';
+  if(d==='f'){out.push({q:pp.f.replace('{a}',A).replace('{b}',B),c:B,w:pick(items.map(x=>x[1]),3,B),exp:ex||(A+' = '+B),g,u,say:A,lang:pp.lang||CFG.lang})}
+  else if(d==='r'){out.push({q:pp.r.replace('{a}',A).replace('{b}',B),c:A,w:pick(items.map(x=>x[0]),3,A),exp:ex||(A+' = '+B),g,u,say:CFG.lang==='en-US'?'':B,lang:CFG.lang})}
+  else{out.push({q:'🔊 聽聽看，這是哪個單字？',c:A,w:pick(items.map(x=>x[0]),3,A),exp:A+' = '+B,g,u,say:A,lang:pp.lang||CFG.lang,listen:1})}
+ }return out;}
+function unitPool(g,ui){const u=BANK[g].units[ui];let p=(u.qs||[]).map(it=>mkItem(it,g,u.n));if(u.pairs)p=p.concat(genPairs(u.pairs,g,u.n));return p}
+function inst(x){const o=x.tf?['○ 對','✕ 錯']:sh([x.c,...x.w]);return Object.assign({},x,{opts:o,a:o.indexOf(x.c)})}
+/* ---------- 狀態 ---------- */
+let S=null;
+/* ---------- 畫面 ---------- */
+function navHtml(){return '<div class="nav">其他科目：'+CFG.nav.map(n=>'<a href="'+n[1]+'">'+n[0]+'</a>').join('')+'</div>'}
+function home(){
+ S=null;const names=Object.keys(DB.profiles);
+ let h='<h1>'+CFG.title+'</h1><p class="sub">'+CFG.sub+'</p>';
+ h+='<div class="card"><div class="row"><span>👤</span><select id="pf">'+names.map(n=>'<option'+(n===DB.cur?' selected':'')+'>'+n+'</option>').join('')+'</select><button class="btn g s" id="addp">＋新增小朋友</button><span class="sp"></span><span class="star">累積答對 '+P().total+' 題</span></div></div>';
+ h+='<h2>選擇年級</h2><div class="grid">';
+ for(let g=1;g<=6;g++){const ok=!!BANK[g];h+='<button class="gb'+(ok?'':' off')+'" data-g="'+g+'">'+g+' 年級<small>'+(ok?CFG.ver[g]||'':'—')+'</small></button>'}
+ h+='</div>';
+ const wn=P().wrong.length;
+ if(wn)h+='<div class="card row"><b>📝 錯題本：'+wn+' 題</b><span class="sp"></span><button class="btn s" id="wr">重練錯題</button></div>';
+ h+='<div class="card"><div class="row"><label><input type="checkbox" id="auto"'+(DB.auto?' checked':'')+'> 低年級自動朗讀題目</label></div><div class="row" style="margin-top:10px"><button class="btn g s" id="ex">匯出進度</button><button class="btn g s" id="im">匯入進度</button><button class="btn g s" id="rs">清除這位進度</button><input type="file" id="fi" accept=".json" style="display:none"></div></div>';
+ h+='<p class="sub">'+CFG.note+'</p>'+navHtml();
+ $('#app').innerHTML=h;
+ $('#pf').onchange=e=>{DB.cur=e.target.value;save();home()};
+ $('#addp').onclick=()=>{const n=(prompt('小朋友的名字：')||'').trim();if(!n)return;if(!DB.profiles[n])DB.profiles[n]={prog:{},wrong:[],total:0};DB.cur=n;save();home()};
+ document.querySelectorAll('.gb').forEach(b=>b.onclick=()=>{if(BANK[+b.dataset.g])grade(+b.dataset.g)});
+ const w=$('#wr');if(w)w.onclick=()=>start(sh(P().wrong).slice(0,10),'錯題重練',null);
+ $('#auto').onchange=e=>{DB.auto=e.target.checked;save()};
+ $('#ex').onclick=()=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(DB)],{type:'application/json'}));a.download=CFG.key+'-backup.json';a.click()};
+ $('#im').onclick=()=>$('#fi').click();
+ $('#fi').onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);if(!d.profiles)throw 0;DB=d;save();home();alert('匯入完成')}catch(x){alert('檔案格式不正確')}};r.readAsText(f)};
+ $('#rs').onclick=()=>{if(confirm('確定清除「'+DB.cur+'」的所有進度？')){DB.profiles[DB.cur]={prog:{},wrong:[],total:0};save();home()}};
+}
+function grade(g){
+ S=null;const B=BANK[g];
+ let h='<div class="top"><button class="btn g s" id="bk">← 返回</button><span class="star">'+DB.cur+'</span></div><h1>'+g+' 年級 '+CFG.name+'</h1><p class="sub">'+(B.note||'')+'</p>';
+ B.units.forEach((u,i)=>{const pr=P().prog[g+'|'+u.n];const b=pr?pr.best:0;const n=unitPool(g,i).length;
+  h+='<button class="unit" data-i="'+i+'"><div><b>'+u.n+'</b><br><span>'+n+' 題'+(pr?'・玩過 '+pr.plays+' 次':'')+'</span></div><span class="star">'+ST(b>=9?3:b>=7?2:b>=5?1:0)+'</span></button>'});
+ h+='<button class="unit" data-i="-1"><div><b>🎲 全部混合</b><br><span>從所有單元隨機抽 10 題</span></div></button>'+navHtml();
+ $('#app').innerHTML=h;$('#bk').onclick=home;
+ document.querySelectorAll('.unit').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;
+  if(i<0){let all=[];B.units.forEach((u,k)=>all=all.concat(unitPool(g,k)));start(sh(all).slice(0,10),g+' 年級 混合',{g,u:'混合'})}
+  else start(sh(unitPool(g,i)).slice(0,10),B.units[i].n,{g,u:B.units[i].n})});
+}
+function start(pool,title,meta){
+ if(!pool.length){alert('沒有題目');return home()}
+ S={list:pool.map(inst),i:0,ok:0,title,meta,done:false};show();
+}
+function show(){
+ const x=S.list[S.i];S.done=false;
+ let h='<div class="top"><button class="btn g s" id="bk">← 離開</button><span class="sub" style="margin:0">'+S.title+'　'+(S.i+1)+' / '+S.list.length+'</span></div>';
+ h+='<div class="bar"><i style="width:'+(S.i/S.list.length*100)+'%"></i></div><div class="card"><div class="q" id="qt">'+x.q+'</div>';
+ if(x.say)h+='<div class="row" style="margin-bottom:6px"><button class="btn g s" id="sp">🔊 朗讀</button></div>';
+ x.opts.forEach((o,k)=>h+='<button class="opt" data-k="'+k+'">'+o+'</button>');
+ h+='<div id="fb"></div></div>';
+ $('#app').innerHTML=h;
+ $('#bk').onclick=()=>{if(confirm('離開這回練習？'))home()};
+ if($('#sp'))$('#sp').onclick=()=>say(x.say,x.lang);
+ document.querySelectorAll('.opt').forEach(b=>b.onclick=()=>ans(+b.dataset.k));
+ if(x.say&&(x.listen||(DB.auto&&CFG.autoRead&&x.g<=CFG.autoMax)))setTimeout(()=>say(x.say,x.lang),250);
+}
+function ans(k){
+ if(S.done)return;S.done=true;const x=S.list[S.i];const right=k===x.a;
+ document.querySelectorAll('.opt').forEach((b,j)=>{if(j===x.a)b.classList.add('ok');else if(j===k)b.classList.add('no')});
+ const p=P();const key=x.q+'|'+x.c;
+ if(right){S.ok++;p.total++;p.wrong=p.wrong.filter(w=>w.q+'|'+w.c!==key)}
+ else if(!p.wrong.some(w=>w.q+'|'+w.c===key)){p.wrong.push({q:x.q,c:x.c,w:x.w,exp:x.exp,g:x.g,u:x.u,tf:x.tf,say:x.say,lang:x.lang,listen:x.listen});if(p.wrong.length>80)p.wrong.shift()}
+ save();
+ const last=S.i===S.list.length-1;
+ let f='<div class="fb '+(right?'ok':'no')+'">'+(right?'✅ 答對了！':'❌ 正確答案：<b>'+x.c+'</b>')+(x.exp?'<br>'+x.exp:'')+'</div>';
+ f+='<button class="btn" id="nx" style="width:100%">'+(last?'看結果':'下一題')+'</button>';
+ $('#fb').innerHTML=f;$('#nx').onclick=next;
+ if(x.listen&&x.say)say(x.say,x.lang);
+}
+function next(){S.i++;if(S.i>=S.list.length)return result();show()}
+function result(){
+ const n=S.list.length,ok=S.ok,m=S.meta;
+ if(m){const key=m.g+'|'+m.u;const pr=P().prog[key]||{best:0,plays:0};pr.plays++;if(ok>pr.best)pr.best=ok;P().prog[key]=pr;save()}
+ const s=ok>=n*.9?3:ok>=n*.7?2:ok>=n*.5?1:0;
+ const msg=['再接再厲，錯的題目已放進錯題本！','不錯喔，再練一次會更好！','很棒！快滿分了！','太厲害了！'][s];
+ let h='<div class="card center"><div class="big">'+['💪','🙂','🎉','🏆'][s]+'</div><h1>答對 '+ok+' / '+n+'</h1><div class="star" style="font-size:30px">'+ST(s)+'</div><p>'+msg+'</p>';
+ h+='<div class="row" style="justify-content:center"><button class="btn" id="ag">再來一回</button><button class="btn g" id="hm">回首頁</button></div></div>';
+ $('#app').innerHTML=h;
+ $('#hm').onclick=home;
+ $('#ag').onclick=()=>{if(m&&m.u!=='混合'){const g=m.g;const ui=BANK[g].units.findIndex(u=>u.n===m.u);start(sh(unitPool(g,ui)).slice(0,10),S.title,m)}else if(m){grade(m.g)}else home()};
+ S=null;
+}
+load();home();
+</script>
+</body>
+</html>

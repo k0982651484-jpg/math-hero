@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>自然科學練習</title>
+<style>
+:root{--bg:#f4f7fb;--card:#fff;--tx:#1d2733;--mut:#6b7785;--pri:#2f6fed;--ok:#1f9d55;--no:#d64545;--ln:#dde3ec;--acc:#3a9d3a}
+@media(prefers-color-scheme:dark){:root{--bg:#141a22;--card:#1f2833;--tx:#e8eef5;--mut:#93a0ae;--ln:#33404f}}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.6 "PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif}
+#app{max-width:640px;margin:0 auto;padding:14px 14px 40px}
+h1{font-size:22px;margin:6px 0 2px}h2{font-size:18px;margin:14px 0 8px}
+.sub{color:var(--mut);font-size:14px;margin:0 0 10px}
+.card{background:var(--card);border:1px solid var(--ln);border-radius:14px;padding:14px;margin:10px 0}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+button,select,input{font:inherit;color:inherit}
+.btn{border:0;border-radius:12px;padding:12px 14px;background:var(--pri);color:#fff;font-weight:700;cursor:pointer}
+.btn.g{background:var(--card);color:var(--tx);border:1px solid var(--ln)}
+.btn.s{padding:6px 10px;font-size:14px;border-radius:9px}
+.gb{padding:18px 6px;font-size:20px;border-radius:14px;border:2px solid var(--acc);background:var(--card);color:var(--tx);font-weight:800;cursor:pointer}
+.gb small{display:block;font-size:12px;color:var(--mut);font-weight:400}
+.gb.off{opacity:.35;cursor:default;border-color:var(--ln)}
+.unit{display:flex;justify-content:space-between;align-items:center;width:100%;text-align:left;padding:13px 14px;margin:8px 0;border-radius:12px;border:1px solid var(--ln);background:var(--card);cursor:pointer}
+.unit b{font-size:16px}.unit span{color:var(--mut);font-size:13px}
+.star{color:#f2a900;letter-spacing:2px;white-space:nowrap}
+.bar{height:8px;background:var(--ln);border-radius:6px;overflow:hidden;margin:6px 0 14px}.bar i{display:block;height:100%;background:var(--acc);transition:width .3s}
+.q{font-size:21px;font-weight:700;line-height:1.6;margin:6px 0 14px;white-space:pre-wrap}
+.q ruby{ruby-position:over}.q rt{font-size:.5em;font-weight:400}
+.opt{display:block;width:100%;text-align:left;margin:8px 0;padding:14px;border-radius:12px;border:2px solid var(--ln);background:var(--card);font-size:18px;cursor:pointer}
+.opt.ok{border-color:var(--ok);background:rgba(31,157,85,.14)}.opt.no{border-color:var(--no);background:rgba(214,69,69,.14)}
+.fb{margin:10px 0;padding:10px 12px;border-radius:10px;font-size:15px}
+.fb.ok{background:rgba(31,157,85,.14)}.fb.no{background:rgba(214,69,69,.14)}
+.top{display:flex;justify-content:space-between;align-items:center}
+.big{font-size:56px;text-align:center;margin:6px 0}.center{text-align:center}
+.nav{font-size:13px;color:var(--mut);margin-top:18px;line-height:2}.nav a{color:var(--pri);margin-right:10px;text-decoration:none}
+.sp{flex:1}
+input[type=text]{padding:9px 10px;border-radius:9px;border:1px solid var(--ln);background:var(--card);width:130px}
+select{padding:9px 10px;border-radius:9px;border:1px solid var(--ln);background:var(--card)}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+const CFG={"key": "kids-science-v1", "title": "自然科學練習", "name": "自然科學", "sub": "依年級重點出題：觀察、生物、物質、地球", "lang": "zh-TW", "ver": {"3": "翰林", "4": "翰林", "5": "翰林", "6": "翰林"}, "autoRead": false, "autoMax": 0, "nav": [["數學", "./"], ["國語", "chinese.html"], ["英語", "english.html"], ["自然", "science.html"], ["社會", "social.html"], ["生活", "life.html"]], "note": "題目依年級學習重點原創編寫，未逐課對照課本；進度只存在這支手機/平板的瀏覽器，可用「匯出進度」備份。"};
+const BANK={"3":{"note":"觀察工具、植物、動物、水與空氣、磁鐵、太陽與影子","units":[{"n":"觀察與工具","qs":[["想把很小的東西看得更清楚，可以用什麼工具？","放大鏡","尺~溫度計~磅秤"],["量物體的長度，可以用什麼工具？","尺","溫度計~放大鏡~量筒"],["量水溫或氣溫，可以用什麼工具？","溫度計","尺~量筒~天平"],["測量液體有多少（體積），可以用什麼工具？","量筒","尺~溫度計~放大鏡"],["觀察時，可以用眼睛、耳朵、鼻子、舌頭和皮膚，這些叫做什麼？","感官","工具~實驗~紀錄"],["觀察到的結果要怎麼做，才不會忘記？","記錄下來","都記在腦中~不用記~只畫圖不寫字"],["實驗時不可以隨便品嘗不認識的東西。","○","不認識的東西可能有毒或危險。"],["使用放大鏡看太陽很安全。","✕","用放大鏡看太陽，會傷害眼睛！"]]},{"n":"植物","qs":[["大部分植物的根有什麼功用？","吸收水分和養分、固定植物","製造種子~開花~產生聲音"],["植物的哪一個部分最主要負責吸收光線來製造養分？","葉","根~花~種子"],["花謝以後，通常會長出什麼？","果實","根~葉~樹皮"],["種子裡面藏著什麼？","小小的新植物","水~蟲~空氣"],["植物生長需要哪些條件？","陽光、水、空氣","只需要陽光~只需要水~只需要土壤"],["蓮花、荷花生長在水裡，它們屬於哪一種植物？","水生植物","沙漠植物~高山植物~草本植物"],["仙人掌身上有尖刺，可以幫助牠做什麼？","減少水分流失、保護自己","吸引蝴蝶~捉蟲~開花"],["所有的植物都會開花。","✕","有些植物（如蕨類）不開花，用孢子繁殖。"]]},{"n":"動物","qs":[["下列哪一種動物是昆蟲？","蝴蝶","蜘蛛~蝸牛~蚯蚓"],["昆蟲的身體分成哪三部分？","頭、胸、腹","頭、腳、尾~頭、背、腹~胸、腹、尾"],["昆蟲有幾隻腳？","六隻","四隻~八隻~十隻"],["蜘蛛是昆蟲嗎？","不是，蜘蛛有八隻腳","是，因為有腳~是，因為會爬~是，因為會結網"],["鳥類身體的表面有什麼？","羽毛","鱗片~毛髮~硬殼"],["魚用什麼呼吸？","鰓","肺~皮膚~鼻子"],["下列哪一種動物是哺乳類？","鯨魚","鯊魚~鱷魚~青蛙","鯨魚用肺呼吸，會用乳汁餵小孩。"],["母雞下蛋，小雞從蛋裡孵出來，這種繁殖方式叫什麼？","卵生","胎生~分裂~出芽"],["貓、狗的寶寶是從媽媽肚子裡出生，這種繁殖方式叫什麼？","胎生","卵生~分裂~孢子"]]},{"n":"水與空氣","qs":[["水在常溫下是什麼狀態？","液態","固態~氣態~不一定"],["冰是水的哪一種狀態？","固態","液態~氣態~粉狀"],["水蒸氣是水的哪一種狀態？","氣態","液態~固態~粉狀"],["冰塊在室溫下放久了會變成水，這種變化叫做什麼？","融化","凝固~蒸發~凝結"],["濕衣服曬乾了，是水發生了什麼變化？","蒸發","融化~凝固~凝結"],["冰涼的杯子外面出現小水珠，是因為空氣中的水蒸氣發生了什麼變化？","凝結","蒸發~融化~凝固"],["空氣看不見，但我們知道它存在，因為？","風會吹動東西、打氣筒能打進空氣","空氣有顏色~空氣很重~空氣有味道"],["空氣會占據空間。","○","例如：把氣球吹大，空氣占了氣球裡的空間。"],["水的體積固定，但是形狀會跟著容器改變。","○","液體沒有固定形狀。"]]},{"n":"磁鐵與影子","qs":[["磁鐵可以吸引哪一種物品？","鐵製的迴紋針","塑膠尺~橡皮擦~紙張"],["磁鐵的哪個部位磁力最強？","兩端（磁極）","正中間~一樣強~側邊"],["磁鐵有哪兩個磁極？","N 極和 S 極","上極和下極~正極和負極~左極和右極"],["兩個磁鐵的同極靠近會怎麼樣？","互相排斥","互相吸引~沒有反應~一個消失"],["兩個磁鐵的異極靠近會怎麼樣？","互相吸引","互相排斥~沒有反應~一個變大"],["磁鐵可以隔著紙或塑膠吸住鐵片。","○","磁力可以穿過一些不是鐵的東西。"],["光碰到物體被擋住時，會在物體後面形成什麼？","影子","彩虹~火焰~泡泡"],["一天當中，什麼時候影子最短？","中午","早上~傍晚~晚上"],["太陽是從哪個方向升起？","東方","西方~南方~北方"]]}]},"4":{"note":"電路、力與運動、聲音、光、天氣與月亮、動植物的生長","units":[{"n":"電路","qs":[["要讓燈泡亮起來，需要什麼？","電池、燈泡、電線形成完整的通路","只要一個燈泡~只要一條電線~只要電池"],["電路中斷開了（沒有形成通路），燈泡會怎麼樣？","不會亮","會亮~會爆炸~會更亮"],["下列哪一種材料容易導電？","銅線","塑膠~橡皮~木頭"],["下列哪一種材料不容易導電（絕緣體）？","塑膠","鐵~銅~鋁"],["電線外面包著塑膠，是為了什麼？","避免漏電、保護人","讓電線更亮~讓電更多~讓電線更重"],["手濕的時候碰電器很危險。","○","水會導電，容易觸電。"],["插座一次插太多電器沒有關係。","✕","電器太多會讓電線過熱，可能引發火災。"]]},{"n":"力與運動","qs":[["用手拉彈簧，彈簧伸長，鬆手後彈回去，這是什麼力？","彈力","重力~磁力~浮力"],["物體被拋出去以後會掉到地上，是因為什麼力？","重力","彈力~磁力~摩擦力"],["滑板在粗糙的地面比光滑的地面更不容易滑動，是因為什麼力？","摩擦力","彈力~重力~電力"],["想讓鞋子走路時不容易滑倒，鞋底應該怎麼設計？","做成有花紋、較粗糙","做得很光滑~做得很軟~做得很重"],["下雨天路面容易滑，是因為水讓摩擦力變怎麼樣？","變小","變大~不變~變成零"],["力可以改變物體的什麼？","形狀或運動狀態","顏色~名字~味道"]]},{"n":"聲音","qs":[["聲音是怎麼產生的？","物體振動","物體靜止~物體變熱~物體變重"],["聲音可以在哪裡傳播？","固體、液體、氣體","只有空氣~只有水~只有固體"],["太空中幾乎沒有空氣，所以在太空中聲音幾乎無法傳播。","○","聲音需要物質才能傳播。"],["鼓皮越緊、敲得越用力，聲音會怎麼樣？","聲音越大","聲音越小~沒有聲音~聲音消失"],["聲音的「大小」和什麼有關？","振動幅度（振幅）","顏色~形狀~重量"],["吉他的弦越短越細，聲音通常越怎麼樣？","越高","越低~越慢~越小"]]},{"n":"光","qs":[["光是怎麼前進的？","直線前進","彎彎曲曲~繞圈圈~一直轉彎"],["鏡子可以讓光怎麼樣？","反射","折射~消失~變慢"],["湯匙放進水杯裡，看起來好像斷掉了，這是光的什麼現象？","折射","反射~直進~消失"],["下列哪一種物體是光源（自己會發光）？","太陽","月亮~鏡子~桌子"],["月亮看起來會發亮，是因為？","反射太陽的光","月亮自己發光~反射星星的光~反射電燈的光"]]},{"n":"天氣與月亮","qs":[["下列哪一種工具可以量雨量？","雨量筒","溫度計~風向袋~氣壓計"],["風向袋可以看出什麼？","風吹來的方向","溫度~雨量~溼度"],["農曆初一的月亮是什麼樣子？","看不見（新月）","圓圓的~半圓~細細的彎月"],["農曆十五的月亮是什麼樣子？","圓圓的（滿月）","看不見~半圓~彎月"],["月亮的形狀每天都在變，這種變化叫做什麼？","月相變化","日食~潮汐~季節"],["水從海洋、河流蒸發，變成雲，再下雨回到地面，這個過程叫做什麼？","水循環","光合作用~月相變化~空氣污染"]]},{"n":"動植物生長","qs":[["種子發芽需要哪些條件？","水分、適當的溫度、空氣","只需要陽光~只需要土壤~只需要肥料"],["蝴蝶的一生依序經過哪四個階段？","卵、幼蟲、蛹、成蟲","卵、成蟲、蛹、幼蟲~卵、蛹、幼蟲、成蟲~幼蟲、卵、蛹、成蟲"],["蝴蝶的幼蟲叫做什麼？","毛毛蟲（幼蟲）","蛹~卵~成蟲"],["蟑螂、蝗蟲長大的過程沒有「蛹」這個階段。","○","牠們屬於不完全變態昆蟲。"],["青蛙小時候叫什麼？","蝌蚪","毛毛蟲~幼蟲~小魚"]]}]},"5":{"note":"水溶液與酸鹼、熱、天氣、生態、植物繁殖、岩石、地球運動","units":[{"n":"水溶液與酸鹼","qs":[["把糖放進水中攪一攪，糖不見了，形成糖水，這種現象叫做什麼？","溶解","蒸發~融化~凝結"],["溶解後的混合物叫做什麼？","水溶液","懸浮液~固體~氣體"],["一般來說，水溫越高，通常越能溶解更多的食鹽或糖。","○","溫度高，溶解速度與溶解量通常都會增加。"],["可以用什麼分辨水溶液是酸性、中性或鹼性？","石蕊試紙（酸鹼指示劑）","尺~量筒~放大鏡"],["檸檬汁、醋是屬於哪一種水溶液？","酸性","中性~鹼性~都不是"],["肥皂水、小蘇打水是屬於哪一種水溶液？","鹼性","酸性~中性~都不是"],["食鹽水是屬於哪一種水溶液？","中性","酸性~鹼性~都不是"],["紅色石蕊試紙遇到鹼性水溶液會變成什麼顏色？","藍色","紅色~黃色~沒有變化"],["藍色石蕊試紙遇到酸性水溶液會變成什麼顏色？","紅色","藍色~黃色~沒有變化"],["酸性水溶液和鹼性水溶液混合，性質會變得比較接近中性。","○","這叫做酸鹼中和。"]]},{"n":"熱的傳播","qs":[["熱是從哪裡傳到哪裡？","從溫度高的地方傳到溫度低的地方","從低溫傳到高溫~只往上傳~不會傳"],["金屬湯匙放進熱湯裡，柄也會變熱，這是熱的哪一種傳播方式？","傳導","對流~輻射~蒸發"],["燒開水時，水受熱往上、冷水往下流動，使整鍋水變熱，這是熱的哪一種傳播方式？","對流","傳導~輻射~蒸發"],["太陽的熱可以穿過太空傳到地球，這是熱的哪一種傳播方式？","輻射","傳導~對流~蒸發"],["下列哪一種材料是熱的良導體（導熱快）？","鐵","塑膠~木頭~保麗龍"],["鍋子的把手常用塑膠或木頭做，是因為它們？","導熱慢，不容易燙手","導熱很快~比較便宜~比較重"],["冬天穿很多層衣服比較保暖，是因為層與層之間的空氣可以減少熱散失。","○","空氣導熱慢。"]]},{"n":"天氣與颱風","qs":[["臺灣夏天常見的災害性天氣是什麼？","颱風","暴風雪~沙塵暴~大寒流"],["颱風來臨前，可以做哪些準備？","準備糧食、固定門窗、避免外出","到海邊看浪~騎車出去玩~爬山"],["冷鋒面通過時，天氣常常會怎麼樣？","降雨、氣溫下降","氣溫升高~變得晴朗溫暖~完全沒有風"],["臺灣冬天吹的風主要是哪個方向來的？","東北風（東北季風）","西南風~正東風~正南風"]]},{"n":"生態與食物鏈","qs":[["「草 → 蚱蜢 → 青蛙 → 蛇」這條食物鏈中，草是什麼角色？","生產者","消費者~分解者~捕食者"],["「草 → 蚱蜢 → 青蛙 → 蛇」中，蚱蜢是什麼角色？","初級消費者（草食動物）","生產者~分解者~最高級消費者"],["在食物鏈中，箭頭「→」代表什麼？","被吃或養分、能量的流向","走路的方向~長大的方向~顏色的變化"],["香菇、細菌能把動植物遺體分解，它們是？","分解者","生產者~消費者~天敵"],["外來種動物如果在新環境大量繁殖，可能會怎麼樣？","破壞原有生態平衡","讓生態更平衡~沒有影響~讓原有動物變多"],["保育瀕臨絕種的動物，最好的方法是？","保護牠們的棲地","把牠們抓起來賣~讓牠們離開森林~增加獵捕"]]},{"n":"植物的繁殖","qs":[["蒲公英的種子有白色絨毛，主要靠什麼傳播？","風","水~動物~人"],["椰子的果實外殼纖維多，可以漂浮在水上，主要靠什麼傳播？","水","風~動物~自己彈出去"],["鬼針草的果實會黏在衣服或動物毛上，主要靠什麼傳播？","動物（附著）","風~水~自己彈出去"],["馬鈴薯、甘藷（地瓜）可以利用莖或根長出新的植物，這種繁殖方式叫做？","營養繁殖","種子繁殖~孢子繁殖~分裂"],["花粉從雄蕊傳到雌蕊柱頭的過程叫做什麼？","授粉","發芽~光合作用~凝結"]]},{"n":"岩石與地層","qs":[["岩石是由什麼組成的？","一種或多種礦物","只有水~只有土~只有鐵"],["下列哪一種岩石是火山噴發出來的熔岩冷卻形成的？","玄武岩","砂岩~頁岩~石灰岩"],["由砂粒、泥土層層堆積壓緊形成的岩石，叫做？","沉積岩","火成岩~變質岩~玄武岩"],["沉積岩裡面常常可以發現什麼？","化石","熔岩~熱泉~煤油"]]},{"n":"地球運動","qs":[["地球一天自轉一圈，所以我們有？","白天和黑夜","春夏秋冬~月亮的變化~潮汐的大小"],["地球繞太陽公轉一圈大約需要多久？","一年","一天~一個月~一小時"],["地球上有四季，主要是因為？","地球自轉軸傾斜，繞太陽公轉","地球離太陽時近時遠~月亮的影響~太陽忽大忽小"],["地球自轉的方向是由西向東。","○","所以太陽看起來是從東方升起、西方落下。"]]}]},"6":{"note":"電磁、化學變化、簡單機械、能源環保、生物與環境、地球與宇宙","units":[{"n":"電與磁","qs":[["電流通過線圈會產生磁性，這個現象可以用來做成什麼？","電磁鐵","磁鐵礦~乾電池~溫度計"],["電磁鐵的優點是什麼？","可以控制有無磁性、強弱","永遠有磁性~不用電~磁力無法改變"],["要讓電磁鐵的磁力變強，可以怎麼做？","增加線圈圈數、使用更多電池","減少線圈~拿掉鐵芯~用塑膠做鐵芯"],["電池串聯後，電壓會怎麼樣？","變大","變小~不變~歸零"],["地球本身也像一個大磁鐵，所以指南針能指出方向。","○","指南針的 N 極大致指向地理北方。"]]},{"n":"化學變化","qs":[["物質燃燒需要哪三個條件？","可燃物、氧氣、達到燃點的溫度","只需要火~水、空氣、木頭~風、沙、水"],["鐵釘放在潮濕的空氣中容易發生什麼變化？","生鏽","融化~蒸發~凝固"],["冰融化成水，是物理變化還是化學變化？","物理變化","化學變化~燃燒~生鏽","只是狀態改變，沒有產生新物質。"],["木頭燃燒變成灰，是物理變化還是化學變化？","化學變化","物理變化~蒸發~溶解"],["發生火災時，不可以用水撲滅的是？","電線走火","木頭失火~紙失火~垃圾失火","電線走火用水可能觸電。"],["撲滅火的方法之一，是隔絕什麼？","氧氣","水~風力~所有物質"]]},{"n":"簡單機械","qs":[["用鐵橇撬開鐵蓋，利用了什麼簡單機械？","槓桿","滑輪~斜面~輪軸"],["蹺蹺板是利用什麼原理？","槓桿","斜面~滑輪~螺旋"],["旗桿頂端的滑輪（定滑輪）主要可以做什麼？","改變施力的方向","省力~增加重量~變成兩倍速度"],["推著東西走斜坡比直接舉上去，通常怎麼樣？","比較省力但路程較長","更費力~一樣~更快"],["使用簡單機械可以省力，但也可以「省功」。","✕","簡單機械不能省功，只是省力或方便。"]]},{"n":"能源與環保","qs":[["下列哪一種是「再生能源」？","太陽能","煤~石油~天然氣"],["下列哪一種屬於「非再生能源」（用完就沒有了）？","石油","風力~太陽能~水力"],["燃燒煤、石油會排放大量什麼氣體，造成溫室效應？","二氧化碳","氧氣~氮氣~氫氣"],["節能減碳可以怎麼做？","隨手關燈、少開冷氣、搭大眾運輸","多開燈~多開車~每天開冷氣"],["垃圾分類回收的目的是？","減少垃圾、資源再利用","讓垃圾更多~讓垃圾變貴~讓垃圾好看"]]},{"n":"生物與環境","qs":[["植物利用陽光、二氧化碳和水製造養分，這個作用叫做？","光合作用","呼吸作用~蒸散作用~授粉"],["光合作用會產生什麼氣體？","氧氣","二氧化碳~氮氣~氫氣"],["人體吸入空氣，主要利用其中的哪種氣體？","氧氣","二氧化碳~氮氣~氦氣"],["我們的心臟主要負責什麼？","推動血液流動","消化食物~過濾空氣~思考"],["消化食物的主要器官系統包括？","口、食道、胃、小腸、大腸","心臟、肺~腦、眼睛~骨頭、肌肉"]]},{"n":"地球與宇宙","qs":[["太陽是一顆什麼？","恆星","行星~衛星~彗星"],["地球是太陽系的什麼？","行星","恆星~衛星~彗星"],["月亮是地球的什麼？","衛星","行星~恆星~彗星"],["下列哪一個是太陽系中最大的行星？","木星","地球~火星~水星"],["離太陽最近的行星是？","水星","金星~地球~火星"],["太陽系中，被稱為「紅色星球」的是？","火星","金星~木星~土星"],["月食發生時，月亮、地球、太陽的位置關係是？","太陽、地球、月亮排成一直線，地球在中間","月亮在中間~太陽在中間~三者排成直角"],["板塊擠壓或錯動，可能造成什麼？","地震、山脈隆起","颱風~日食~極光"],["發生地震時，在室內應該怎麼做？","趴下、掩護、穩住，躲在堅固桌子下","跑到電梯裡~站在窗邊~立刻跳樓"]]}]}};
+const $=s=>document.querySelector(s);
+const ST=n=>'★'.repeat(n)+'☆'.repeat(3-n);
+function sh(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a}
+/* ---------- 儲存 ---------- */
+let DB;
+function load(){try{DB=JSON.parse(localStorage.getItem(CFG.key))}catch(e){DB=null}
+ if(!DB||!DB.profiles)DB={cur:'小朋友',auto:true,profiles:{'小朋友':{prog:{},wrong:[],total:0}}};}
+function save(){try{localStorage.setItem(CFG.key,JSON.stringify(DB))}catch(e){}}
+const P=()=>DB.profiles[DB.cur];
+/* ---------- 朗讀 ---------- */
+function say(t,l){try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(String(t).replace(/<[^>]+>/g,''));u.lang=l||CFG.lang;u.rate=.85;speechSynthesis.speak(u)}catch(e){}}
+/* ---------- 題目產生 ---------- */
+function enOnly(t){if(CFG.lang!=='en-US')return t;const s=t.replace(/[\u2E80-\u9FFF\uFF00-\uFFEF\u3000-\u303F]/g,' ').replace(/\s+/g,' ').trim();return /[A-Za-z]{2,}/.test(s)||/^[A-Za-z]$/.test(s)?s:''}
+function mkItem(it,g,u){
+ if(it[1]==='○'||it[1]==='✕')return{q:it[0],c:it[1]==='○'?'○ 對':'✕ 錯',w:[it[1]==='○'?'✕ 錯':'○ 對'],tf:1,exp:it[2]||'',g,u,say:enOnly(it[0]),lang:CFG.lang};
+ return{q:it[0],c:it[1],w:it[2].split('~'),exp:it[3]||'',g,u,say:enOnly(it[0]),lang:CFG.lang};}
+function pick(arr,n,ex){const o=[];for(const x of sh(arr)){if(x!==ex&&!o.includes(x))o.push(x);if(o.length>=n)break}return o}
+function genPairs(pp,g,u){
+ const out=[];const items=pp.items;
+ for(const it of items){
+  const dirs=['f'];if(pp.r)dirs.push('r');if(pp.l)dirs.push('l');
+  const d=dirs[Math.random()*dirs.length|0];
+  const A=it[0],B=it[1],ex=it[2]||'';
+  if(d==='f'){out.push({q:pp.f.replace('{a}',A).replace('{b}',B),c:B,w:pick(items.map(x=>x[1]),3,B),exp:ex||(A+' = '+B),g,u,say:A,lang:pp.lang||CFG.lang})}
+  else if(d==='r'){out.push({q:pp.r.replace('{a}',A).replace('{b}',B),c:A,w:pick(items.map(x=>x[0]),3,A),exp:ex||(A+' = '+B),g,u,say:CFG.lang==='en-US'?'':B,lang:CFG.lang})}
+  else{out.push({q:'🔊 聽聽看，這是哪個單字？',c:A,w:pick(items.map(x=>x[0]),3,A),exp:A+' = '+B,g,u,say:A,lang:pp.lang||CFG.lang,listen:1})}
+ }return out;}
+function unitPool(g,ui){const u=BANK[g].units[ui];let p=(u.qs||[]).map(it=>mkItem(it,g,u.n));if(u.pairs)p=p.concat(genPairs(u.pairs,g,u.n));return p}
+function inst(x){const o=x.tf?['○ 對','✕ 錯']:sh([x.c,...x.w]);return Object.assign({},x,{opts:o,a:o.indexOf(x.c)})}
+/* ---------- 狀態 ---------- */
+let S=null;
+/* ---------- 畫面 ---------- */
+function navHtml(){return '<div class="nav">其他科目：'+CFG.nav.map(n=>'<a href="'+n[1]+'">'+n[0]+'</a>').join('')+'</div>'}
+function home(){
+ S=null;const names=Object.keys(DB.profiles);
+ let h='<h1>'+CFG.title+'</h1><p class="sub">'+CFG.sub+'</p>';
+ h+='<div class="card"><div class="row"><span>👤</span><select id="pf">'+names.map(n=>'<option'+(n===DB.cur?' selected':'')+'>'+n+'</option>').join('')+'</select><button class="btn g s" id="addp">＋新增小朋友</button><span class="sp"></span><span class="star">累積答對 '+P().total+' 題</span></div></div>';
+ h+='<h2>選擇年級</h2><div class="grid">';
+ for(let g=1;g<=6;g++){const ok=!!BANK[g];h+='<button class="gb'+(ok?'':' off')+'" data-g="'+g+'">'+g+' 年級<small>'+(ok?CFG.ver[g]||'':'—')+'</small></button>'}
+ h+='</div>';
+ const wn=P().wrong.length;
+ if(wn)h+='<div class="card row"><b>📝 錯題本：'+wn+' 題</b><span class="sp"></span><button class="btn s" id="wr">重練錯題</button></div>';
+ h+='<div class="card"><div class="row"><label><input type="checkbox" id="auto"'+(DB.auto?' checked':'')+'> 低年級自動朗讀題目</label></div><div class="row" style="margin-top:10px"><button class="btn g s" id="ex">匯出進度</button><button class="btn g s" id="im">匯入進度</button><button class="btn g s" id="rs">清除這位進度</button><input type="file" id="fi" accept=".json" style="display:none"></div></div>';
+ h+='<p class="sub">'+CFG.note+'</p>'+navHtml();
+ $('#app').innerHTML=h;
+ $('#pf').onchange=e=>{DB.cur=e.target.value;save();home()};
+ $('#addp').onclick=()=>{const n=(prompt('小朋友的名字：')||'').trim();if(!n)return;if(!DB.profiles[n])DB.profiles[n]={prog:{},wrong:[],total:0};DB.cur=n;save();home()};
+ document.querySelectorAll('.gb').forEach(b=>b.onclick=()=>{if(BANK[+b.dataset.g])grade(+b.dataset.g)});
+ const w=$('#wr');if(w)w.onclick=()=>start(sh(P().wrong).slice(0,10),'錯題重練',null);
+ $('#auto').onchange=e=>{DB.auto=e.target.checked;save()};
+ $('#ex').onclick=()=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(DB)],{type:'application/json'}));a.download=CFG.key+'-backup.json';a.click()};
+ $('#im').onclick=()=>$('#fi').click();
+ $('#fi').onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);if(!d.profiles)throw 0;DB=d;save();home();alert('匯入完成')}catch(x){alert('檔案格式不正確')}};r.readAsText(f)};
+ $('#rs').onclick=()=>{if(confirm('確定清除「'+DB.cur+'」的所有進度？')){DB.profiles[DB.cur]={prog:{},wrong:[],total:0};save();home()}};
+}
+function grade(g){
+ S=null;const B=BANK[g];
+ let h='<div class="top"><button class="btn g s" id="bk">← 返回</button><span class="star">'+DB.cur+'</span></div><h1>'+g+' 年級 '+CFG.name+'</h1><p class="sub">'+(B.note||'')+'</p>';
+ B.units.forEach((u,i)=>{const pr=P().prog[g+'|'+u.n];const b=pr?pr.best:0;const n=unitPool(g,i).length;
+  h+='<button class="unit" data-i="'+i+'"><div><b>'+u.n+'</b><br><span>'+n+' 題'+(pr?'・玩過 '+pr.plays+' 次':'')+'</span></div><span class="star">'+ST(b>=9?3:b>=7?2:b>=5?1:0)+'</span></button>'});
+ h+='<button class="unit" data-i="-1"><div><b>🎲 全部混合</b><br><span>從所有單元隨機抽 10 題</span></div></button>'+navHtml();
+ $('#app').innerHTML=h;$('#bk').onclick=home;
+ document.querySelectorAll('.unit').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;
+  if(i<0){let all=[];B.units.forEach((u,k)=>all=all.concat(unitPool(g,k)));start(sh(all).slice(0,10),g+' 年級 混合',{g,u:'混合'})}
+  else start(sh(unitPool(g,i)).slice(0,10),B.units[i].n,{g,u:B.units[i].n})});
+}
+function start(pool,title,meta){
+ if(!pool.length){alert('沒有題目');return home()}
+ S={list:pool.map(inst),i:0,ok:0,title,meta,done:false};show();
+}
+function show(){
+ const x=S.list[S.i];S.done=false;
+ let h='<div class="top"><button class="btn g s" id="bk">← 離開</button><span class="sub" style="margin:0">'+S.title+'　'+(S.i+1)+' / '+S.list.length+'</span></div>';
+ h+='<div class="bar"><i style="width:'+(S.i/S.list.length*100)+'%"></i></div><div class="card"><div class="q" id="qt">'+x.q+'</div>';
+ if(x.say)h+='<div class="row" style="margin-bottom:6px"><button class="btn g s" id="sp">🔊 朗讀</button></div>';
+ x.opts.forEach((o,k)=>h+='<button class="opt" data-k="'+k+'">'+o+'</button>');
+ h+='<div id="fb"></div></div>';
+ $('#app').innerHTML=h;
+ $('#bk').onclick=()=>{if(confirm('離開這回練習？'))home()};
+ if($('#sp'))$('#sp').onclick=()=>say(x.say,x.lang);
+ document.querySelectorAll('.opt').forEach(b=>b.onclick=()=>ans(+b.dataset.k));
+ if(x.say&&(x.listen||(DB.auto&&CFG.autoRead&&x.g<=CFG.autoMax)))setTimeout(()=>say(x.say,x.lang),250);
+}
+function ans(k){
+ if(S.done)return;S.done=true;const x=S.list[S.i];const right=k===x.a;
+ document.querySelectorAll('.opt').forEach((b,j)=>{if(j===x.a)b.classList.add('ok');else if(j===k)b.classList.add('no')});
+ const p=P();const key=x.q+'|'+x.c;
+ if(right){S.ok++;p.total++;p.wrong=p.wrong.filter(w=>w.q+'|'+w.c!==key)}
+ else if(!p.wrong.some(w=>w.q+'|'+w.c===key)){p.wrong.push({q:x.q,c:x.c,w:x.w,exp:x.exp,g:x.g,u:x.u,tf:x.tf,say:x.say,lang:x.lang,listen:x.listen});if(p.wrong.length>80)p.wrong.shift()}
+ save();
+ const last=S.i===S.list.length-1;
+ let f='<div class="fb '+(right?'ok':'no')+'">'+(right?'✅ 答對了！':'❌ 正確答案：<b>'+x.c+'</b>')+(x.exp?'<br>'+x.exp:'')+'</div>';
+ f+='<button class="btn" id="nx" style="width:100%">'+(last?'看結果':'下一題')+'</button>';
+ $('#fb').innerHTML=f;$('#nx').onclick=next;
+ if(x.listen&&x.say)say(x.say,x.lang);
+}
+function next(){S.i++;if(S.i>=S.list.length)return result();show()}
+function result(){
+ const n=S.list.length,ok=S.ok,m=S.meta;
+ if(m){const key=m.g+'|'+m.u;const pr=P().prog[key]||{best:0,plays:0};pr.plays++;if(ok>pr.best)pr.best=ok;P().prog[key]=pr;save()}
+ const s=ok>=n*.9?3:ok>=n*.7?2:ok>=n*.5?1:0;
+ const msg=['再接再厲，錯的題目已放進錯題本！','不錯喔，再練一次會更好！','很棒！快滿分了！','太厲害了！'][s];
+ let h='<div class="card center"><div class="big">'+['💪','🙂','🎉','🏆'][s]+'</div><h1>答對 '+ok+' / '+n+'</h1><div class="star" style="font-size:30px">'+ST(s)+'</div><p>'+msg+'</p>';
+ h+='<div class="row" style="justify-content:center"><button class="btn" id="ag">再來一回</button><button class="btn g" id="hm">回首頁</button></div></div>';
+ $('#app').innerHTML=h;
+ $('#hm').onclick=home;
+ $('#ag').onclick=()=>{if(m&&m.u!=='混合'){const g=m.g;const ui=BANK[g].units.findIndex(u=>u.n===m.u);start(sh(unitPool(g,ui)).slice(0,10),S.title,m)}else if(m){grade(m.g)}else home()};
+ S=null;
+}
+load();home();
+</script>
+</body>
+</html>

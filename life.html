@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>生活練習</title>
+<style>
+:root{--bg:#f4f7fb;--card:#fff;--tx:#1d2733;--mut:#6b7785;--pri:#2f6fed;--ok:#1f9d55;--no:#d64545;--ln:#dde3ec;--acc:#d9628a}
+@media(prefers-color-scheme:dark){:root{--bg:#141a22;--card:#1f2833;--tx:#e8eef5;--mut:#93a0ae;--ln:#33404f}}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.6 "PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif}
+#app{max-width:640px;margin:0 auto;padding:14px 14px 40px}
+h1{font-size:22px;margin:6px 0 2px}h2{font-size:18px;margin:14px 0 8px}
+.sub{color:var(--mut);font-size:14px;margin:0 0 10px}
+.card{background:var(--card);border:1px solid var(--ln);border-radius:14px;padding:14px;margin:10px 0}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+button,select,input{font:inherit;color:inherit}
+.btn{border:0;border-radius:12px;padding:12px 14px;background:var(--pri);color:#fff;font-weight:700;cursor:pointer}
+.btn.g{background:var(--card);color:var(--tx);border:1px solid var(--ln)}
+.btn.s{padding:6px 10px;font-size:14px;border-radius:9px}
+.gb{padding:18px 6px;font-size:20px;border-radius:14px;border:2px solid var(--acc);background:var(--card);color:var(--tx);font-weight:800;cursor:pointer}
+.gb small{display:block;font-size:12px;color:var(--mut);font-weight:400}
+.gb.off{opacity:.35;cursor:default;border-color:var(--ln)}
+.unit{display:flex;justify-content:space-between;align-items:center;width:100%;text-align:left;padding:13px 14px;margin:8px 0;border-radius:12px;border:1px solid var(--ln);background:var(--card);cursor:pointer}
+.unit b{font-size:16px}.unit span{color:var(--mut);font-size:13px}
+.star{color:#f2a900;letter-spacing:2px;white-space:nowrap}
+.bar{height:8px;background:var(--ln);border-radius:6px;overflow:hidden;margin:6px 0 14px}.bar i{display:block;height:100%;background:var(--acc);transition:width .3s}
+.q{font-size:21px;font-weight:700;line-height:1.6;margin:6px 0 14px;white-space:pre-wrap}
+.q ruby{ruby-position:over}.q rt{font-size:.5em;font-weight:400}
+.opt{display:block;width:100%;text-align:left;margin:8px 0;padding:14px;border-radius:12px;border:2px solid var(--ln);background:var(--card);font-size:18px;cursor:pointer}
+.opt.ok{border-color:var(--ok);background:rgba(31,157,85,.14)}.opt.no{border-color:var(--no);background:rgba(214,69,69,.14)}
+.fb{margin:10px 0;padding:10px 12px;border-radius:10px;font-size:15px}
+.fb.ok{background:rgba(31,157,85,.14)}.fb.no{background:rgba(214,69,69,.14)}
+.top{display:flex;justify-content:space-between;align-items:center}
+.big{font-size:56px;text-align:center;margin:6px 0}.center{text-align:center}
+.nav{font-size:13px;color:var(--mut);margin-top:18px;line-height:2}.nav a{color:var(--pri);margin-right:10px;text-decoration:none}
+.sp{flex:1}
+input[type=text]{padding:9px 10px;border-radius:9px;border:1px solid var(--ln);background:var(--card);width:130px}
+select{padding:9px 10px;border-radius:9px;border:1px solid var(--ln);background:var(--card)}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+const CFG={"key": "kids-life-v1", "title": "生活練習", "name": "生活", "sub": "1-2 年級：自己、家庭、學校、自然、安全（可朗讀題目）", "lang": "zh-TW", "ver": {"1": "康軒/翰林/南一", "2": "康軒/翰林/南一"}, "autoRead": true, "autoMax": 2, "nav": [["數學", "./"], ["國語", "chinese.html"], ["英語", "english.html"], ["自然", "science.html"], ["社會", "social.html"], ["生活", "life.html"]], "note": "題目依年級學習重點原創編寫，未逐課對照課本；進度只存在這支手機/平板的瀏覽器，可用「匯出進度」備份。"};
+const BANK={"1":{"note":"自己、家人、學校、安全、動植物、季節（可按 🔊 朗讀題目）","units":[{"n":"認識自己","qs":[["我們用什麼看東西？","眼睛","耳朵~鼻子~嘴巴"],["我們用什麼聽聲音？","耳朵","眼睛~鼻子~手"],["我們用什麼聞味道？","鼻子","眼睛~耳朵~腳"],["我們用什麼吃東西、說話？","嘴巴","耳朵~鼻子~眼睛"],["我們用什麼摸東西？","手","眼睛~耳朵~鼻子"],["我們用什麼走路、跑步？","腳","手~頭~耳朵"],["開心的時候，臉上會有什麼表情？","笑","哭~生氣~睡覺"],["被別人搶走玩具，心裡可能會覺得？","生氣或難過","很開心~想睡覺~很餓"],["你想要別人借你東西時，應該怎麼說？","請問可以借我嗎？","給我！~我要拿了~快點給我"],["做錯事要說什麼？","對不起","沒關係~不要~再見"],["別人幫助你，要說什麼？","謝謝","對不起~不用~再見"]]},{"n":"家人與學校","qs":[["爸爸的爸爸，我們稱呼他什麼？","爺爺","外公~叔叔~舅舅"],["媽媽的媽媽，我們稱呼她什麼？","外婆","奶奶~阿姨~姑姑"],["爸爸的哥哥，我們稱呼他什麼？","伯父（伯伯）","叔叔~舅舅~姑丈"],["在家裡可以幫忙做什麼事？","收拾玩具、擺碗筷","把東西亂丟~大聲吵鬧~不吃飯"],["早上到學校，看到老師要怎麼做？","說「老師早」","假裝沒看到~大聲尖叫~推別人"],["上課時想發言，應該怎麼做？","舉手","大叫~站在桌子上~直接離開"],["下課時，可以在走廊做什麼？","慢慢走、輕聲說話","跑跳追逐~推擠~大聲吼叫"],["在學校裡，要把用完的東西怎麼處理？","放回原來的位置","丟在地上~帶回家~留在桌上"],["同學忘了帶鉛筆，我們可以怎麼做？","借他用","笑他~搶走~不理他"],["垃圾應該丟在哪裡？","垃圾桶","地上~桌子裡~操場"]]},{"n":"安全","qs":[["過馬路時，要看哪一個燈？","綠燈才可以走","紅燈可以走~黃燈快跑~不用看燈"],["紅燈的時候要怎麼做？","停下來等","快跑過去~慢慢走過去~蹲下來"],["坐在車子裡要做什麼才安全？","繫好安全帶","站起來~把頭伸出窗外~玩遊戲"],["陌生人說要請你吃糖，帶你去玩，你應該怎麼做？","拒絕並告訴大人","跟他走~收下糖果~告訴他家在哪裡"],["迷路了，應該怎麼辦？","站在原地，找警察或店員幫忙","亂跑~跟陌生人走~躲起來"],["不可以用手去摸哪一個東西？","插座","書本~玩具~鉛筆"],["火柴、打火機是小朋友可以玩的嗎？","不可以","可以~可以偷偷玩~可以在房間玩"],["被熱水燙到，要先做什麼？","用冷水沖一沖","塗牙膏~用手摸~不理它"]]},{"n":"動植物與季節","qs":[["下列哪一個是動物？","小狗","花~樹~草"],["下列哪一個是植物？","花","小狗~小鳥~魚"],["植物需要什麼才能長大？","陽光和水","糖果~玩具~電視"],["小魚住在哪裡？","水裡","樹上~天空~洞裡"],["小鳥通常用什麼飛？","翅膀","腳~尾巴~眼睛"],["春夏秋冬，哪一個季節最冷？","冬天","春天~夏天~秋天"],["哪一個季節最熱？","夏天","冬天~春天~秋天"],["穿短袖、吃冰，最可能是哪一個季節？","夏天","冬天~春天~秋天"]]}]},"2":{"note":"自己、家庭、學校、社區、動植物、節日與環保（可按 🔊 朗讀題目）","units":[{"n":"自己與健康","qs":[["每天早晚要刷牙，為什麼？","保護牙齒，預防蛀牙","讓牙齒變黃~讓牙齒掉光~不為什麼"],["吃飯前、上完廁所後，要做什麼？","用肥皂洗手","用衣服擦手~直接吃~摸頭髮"],["下列哪一種食物比較健康？","蔬菜和水果","汽水~糖果~炸雞排"],["每天要睡得夠，睡眠不足會怎麼樣？","沒精神、容易生病","長更高~更聰明~不會累"],["感冒的時候，要怎麼做？","多休息、戴口罩、多喝水","去運動場跑步~對人咳嗽~不吃藥也不休息"],["打噴嚏、咳嗽時，要怎麼做？","用手肘或衛生紙遮住口鼻","對著別人~用手直接遮~不用遮"],["看書太久，眼睛會很累，應該怎麼做？","休息、看遠方","繼續看~躺著看~關燈看"]]},{"n":"家庭與學校","qs":[["家庭成員有哪些人？","爸爸、媽媽、兄弟姊妹等","只有爸爸~同學~鄰居"],["家裡的事情，應該怎麼做？","大家分工合作","都給媽媽做~都不管~讓小孩做"],["和同學吵架了，應該怎麼辦？","好好說、找老師幫忙","打他~不理他一輩子~告訴大家他壞話"],["班級要整齊乾淨，大家要怎麼做？","一起打掃，維持整潔","讓值日生一個人做~亂丟垃圾~把垃圾藏起來"],["學校的圖書館是做什麼用的？","借書、看書","打籃球~吃飯~睡覺"],["學校裡誰可以幫助生病的同學？","護理師（健康中心的老師）","警察~廚師~司機"]]},{"n":"社區與安全","qs":[["下列哪一個是社區裡的公共設施？","公園","自己的床~爸爸的車~家裡的冰箱"],["社區裡的垃圾車來的時候，我們要怎麼做？","準備好垃圾，分類丟入車內","在旁邊玩~亂丟~把垃圾丟給別人"],["發生火災時，要打哪一個電話？","119","110~104~165"],["看到壞人做壞事，要打哪一個電話？","110","119~104~165"],["發生火災時，要用什麼遮住口鼻再逃生？","濕毛巾","乾毛巾~塑膠袋~棉被"],["地震來的時候，在教室裡應該做什麼？","躲在桌子下，保護頭頸","衝到走廊~站在窗邊~躲進櫃子"]]},{"n":"動植物","qs":[["毛毛蟲長大後會變成什麼？","蝴蝶或蛾","蜜蜂~蜘蛛~蝸牛"],["小蝌蚪長大後會變成什麼？","青蛙","魚~鳥~蛇"],["種子發芽需要什麼？","水和空氣","只需要糖~只需要玩具~只需要鐵"],["下列哪一種動物會下蛋？","母雞","小狗~小貓~兔子"],["小鳥是怎麼保暖的？","靠羽毛","穿衣服~躲進洞裡~靠鱗片"],["我們應該怎麼對待小動物？","愛護牠們、不傷害牠們","欺負牠們~丟石頭~把牠們抓來玩"]]},{"n":"節日與環保","qs":[["中秋節時，很多人會做什麼？","賞月、吃月餅","吃粽子~划龍舟~放鞭炮"],["端午節時，很多人會吃什麼？","粽子","月餅~湯圓~年糕"],["過年時，小朋友常會收到什麼？","紅包","粽子~月餅~蛋糕"],["垃圾分類，寶特瓶要放在哪裡？","回收","一般垃圾~廚餘~不用管"],["節約用水，刷牙時要怎麼做？","用水杯裝水","水龍頭一直開~開著水跑開~玩水"],["離開房間時，要記得做什麼？","關燈","把燈全開~開電視~開冷氣"],["出門買東西，可以帶什麼來減少垃圾？","環保袋","塑膠袋~紙杯~免洗筷"]]}]}};
+const $=s=>document.querySelector(s);
+const ST=n=>'★'.repeat(n)+'☆'.repeat(3-n);
+function sh(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a}
+/* ---------- 儲存 ---------- */
+let DB;
+function load(){try{DB=JSON.parse(localStorage.getItem(CFG.key))}catch(e){DB=null}
+ if(!DB||!DB.profiles)DB={cur:'小朋友',auto:true,profiles:{'小朋友':{prog:{},wrong:[],total:0}}};}
+function save(){try{localStorage.setItem(CFG.key,JSON.stringify(DB))}catch(e){}}
+const P=()=>DB.profiles[DB.cur];
+/* ---------- 朗讀 ---------- */
+function say(t,l){try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(String(t).replace(/<[^>]+>/g,''));u.lang=l||CFG.lang;u.rate=.85;speechSynthesis.speak(u)}catch(e){}}
+/* ---------- 題目產生 ---------- */
+function enOnly(t){if(CFG.lang!=='en-US')return t;const s=t.replace(/[\u2E80-\u9FFF\uFF00-\uFFEF\u3000-\u303F]/g,' ').replace(/\s+/g,' ').trim();return /[A-Za-z]{2,}/.test(s)||/^[A-Za-z]$/.test(s)?s:''}
+function mkItem(it,g,u){
+ if(it[1]==='○'||it[1]==='✕')return{q:it[0],c:it[1]==='○'?'○ 對':'✕ 錯',w:[it[1]==='○'?'✕ 錯':'○ 對'],tf:1,exp:it[2]||'',g,u,say:enOnly(it[0]),lang:CFG.lang};
+ return{q:it[0],c:it[1],w:it[2].split('~'),exp:it[3]||'',g,u,say:enOnly(it[0]),lang:CFG.lang};}
+function pick(arr,n,ex){const o=[];for(const x of sh(arr)){if(x!==ex&&!o.includes(x))o.push(x);if(o.length>=n)break}return o}
+function genPairs(pp,g,u){
+ const out=[];const items=pp.items;
+ for(const it of items){
+  const dirs=['f'];if(pp.r)dirs.push('r');if(pp.l)dirs.push('l');
+  const d=dirs[Math.random()*dirs.length|0];
+  const A=it[0],B=it[1],ex=it[2]||'';
+  if(d==='f'){out.push({q:pp.f.replace('{a}',A).replace('{b}',B),c:B,w:pick(items.map(x=>x[1]),3,B),exp:ex||(A+' = '+B),g,u,say:A,lang:pp.lang||CFG.lang})}
+  else if(d==='r'){out.push({q:pp.r.replace('{a}',A).replace('{b}',B),c:A,w:pick(items.map(x=>x[0]),3,A),exp:ex||(A+' = '+B),g,u,say:CFG.lang==='en-US'?'':B,lang:CFG.lang})}
+  else{out.push({q:'🔊 聽聽看，這是哪個單字？',c:A,w:pick(items.map(x=>x[0]),3,A),exp:A+' = '+B,g,u,say:A,lang:pp.lang||CFG.lang,listen:1})}
+ }return out;}
+function unitPool(g,ui){const u=BANK[g].units[ui];let p=(u.qs||[]).map(it=>mkItem(it,g,u.n));if(u.pairs)p=p.concat(genPairs(u.pairs,g,u.n));return p}
+function inst(x){const o=x.tf?['○ 對','✕ 錯']:sh([x.c,...x.w]);return Object.assign({},x,{opts:o,a:o.indexOf(x.c)})}
+/* ---------- 狀態 ---------- */
+let S=null;
+/* ---------- 畫面 ---------- */
+function navHtml(){return '<div class="nav">其他科目：'+CFG.nav.map(n=>'<a href="'+n[1]+'">'+n[0]+'</a>').join('')+'</div>'}
+function home(){
+ S=null;const names=Object.keys(DB.profiles);
+ let h='<h1>'+CFG.title+'</h1><p class="sub">'+CFG.sub+'</p>';
+ h+='<div class="card"><div class="row"><span>👤</span><select id="pf">'+names.map(n=>'<option'+(n===DB.cur?' selected':'')+'>'+n+'</option>').join('')+'</select><button class="btn g s" id="addp">＋新增小朋友</button><span class="sp"></span><span class="star">累積答對 '+P().total+' 題</span></div></div>';
+ h+='<h2>選擇年級</h2><div class="grid">';
+ for(let g=1;g<=6;g++){const ok=!!BANK[g];h+='<button class="gb'+(ok?'':' off')+'" data-g="'+g+'">'+g+' 年級<small>'+(ok?CFG.ver[g]||'':'—')+'</small></button>'}
+ h+='</div>';
+ const wn=P().wrong.length;
+ if(wn)h+='<div class="card row"><b>📝 錯題本：'+wn+' 題</b><span class="sp"></span><button class="btn s" id="wr">重練錯題</button></div>';
+ h+='<div class="card"><div class="row"><label><input type="checkbox" id="auto"'+(DB.auto?' checked':'')+'> 低年級自動朗讀題目</label></div><div class="row" style="margin-top:10px"><button class="btn g s" id="ex">匯出進度</button><button class="btn g s" id="im">匯入進度</button><button class="btn g s" id="rs">清除這位進度</button><input type="file" id="fi" accept=".json" style="display:none"></div></div>';
+ h+='<p class="sub">'+CFG.note+'</p>'+navHtml();
+ $('#app').innerHTML=h;
+ $('#pf').onchange=e=>{DB.cur=e.target.value;save();home()};
+ $('#addp').onclick=()=>{const n=(prompt('小朋友的名字：')||'').trim();if(!n)return;if(!DB.profiles[n])DB.profiles[n]={prog:{},wrong:[],total:0};DB.cur=n;save();home()};
+ document.querySelectorAll('.gb').forEach(b=>b.onclick=()=>{if(BANK[+b.dataset.g])grade(+b.dataset.g)});
+ const w=$('#wr');if(w)w.onclick=()=>start(sh(P().wrong).slice(0,10),'錯題重練',null);
+ $('#auto').onchange=e=>{DB.auto=e.target.checked;save()};
+ $('#ex').onclick=()=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(DB)],{type:'application/json'}));a.download=CFG.key+'-backup.json';a.click()};
+ $('#im').onclick=()=>$('#fi').click();
+ $('#fi').onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);if(!d.profiles)throw 0;DB=d;save();home();alert('匯入完成')}catch(x){alert('檔案格式不正確')}};r.readAsText(f)};
+ $('#rs').onclick=()=>{if(confirm('確定清除「'+DB.cur+'」的所有進度？')){DB.profiles[DB.cur]={prog:{},wrong:[],total:0};save();home()}};
+}
+function grade(g){
+ S=null;const B=BANK[g];
+ let h='<div class="top"><button class="btn g s" id="bk">← 返回</button><span class="star">'+DB.cur+'</span></div><h1>'+g+' 年級 '+CFG.name+'</h1><p class="sub">'+(B.note||'')+'</p>';
+ B.units.forEach((u,i)=>{const pr=P().prog[g+'|'+u.n];const b=pr?pr.best:0;const n=unitPool(g,i).length;
+  h+='<button class="unit" data-i="'+i+'"><div><b>'+u.n+'</b><br><span>'+n+' 題'+(pr?'・玩過 '+pr.plays+' 次':'')+'</span></div><span class="star">'+ST(b>=9?3:b>=7?2:b>=5?1:0)+'</span></button>'});
+ h+='<button class="unit" data-i="-1"><div><b>🎲 全部混合</b><br><span>從所有單元隨機抽 10 題</span></div></button>'+navHtml();
+ $('#app').innerHTML=h;$('#bk').onclick=home;
+ document.querySelectorAll('.unit').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;
+  if(i<0){let all=[];B.units.forEach((u,k)=>all=all.concat(unitPool(g,k)));start(sh(all).slice(0,10),g+' 年級 混合',{g,u:'混合'})}
+  else start(sh(unitPool(g,i)).slice(0,10),B.units[i].n,{g,u:B.units[i].n})});
+}
+function start(pool,title,meta){
+ if(!pool.length){alert('沒有題目');return home()}
+ S={list:pool.map(inst),i:0,ok:0,title,meta,done:false};show();
+}
+function show(){
+ const x=S.list[S.i];S.done=false;
+ let h='<div class="top"><button class="btn g s" id="bk">← 離開</button><span class="sub" style="margin:0">'+S.title+'　'+(S.i+1)+' / '+S.list.length+'</span></div>';
+ h+='<div class="bar"><i style="width:'+(S.i/S.list.length*100)+'%"></i></div><div class="card"><div class="q" id="qt">'+x.q+'</div>';
+ if(x.say)h+='<div class="row" style="margin-bottom:6px"><button class="btn g s" id="sp">🔊 朗讀</button></div>';
+ x.opts.forEach((o,k)=>h+='<button class="opt" data-k="'+k+'">'+o+'</button>');
+ h+='<div id="fb"></div></div>';
+ $('#app').innerHTML=h;
+ $('#bk').onclick=()=>{if(confirm('離開這回練習？'))home()};
+ if($('#sp'))$('#sp').onclick=()=>say(x.say,x.lang);
+ document.querySelectorAll('.opt').forEach(b=>b.onclick=()=>ans(+b.dataset.k));
+ if(x.say&&(x.listen||(DB.auto&&CFG.autoRead&&x.g<=CFG.autoMax)))setTimeout(()=>say(x.say,x.lang),250);
+}
+function ans(k){
+ if(S.done)return;S.done=true;const x=S.list[S.i];const right=k===x.a;
+ document.querySelectorAll('.opt').forEach((b,j)=>{if(j===x.a)b.classList.add('ok');else if(j===k)b.classList.add('no')});
+ const p=P();const key=x.q+'|'+x.c;
+ if(right){S.ok++;p.total++;p.wrong=p.wrong.filter(w=>w.q+'|'+w.c!==key)}
+ else if(!p.wrong.some(w=>w.q+'|'+w.c===key)){p.wrong.push({q:x.q,c:x.c,w:x.w,exp:x.exp,g:x.g,u:x.u,tf:x.tf,say:x.say,lang:x.lang,listen:x.listen});if(p.wrong.length>80)p.wrong.shift()}
+ save();
+ const last=S.i===S.list.length-1;
+ let f='<div class="fb '+(right?'ok':'no')+'">'+(right?'✅ 答對了！':'❌ 正確答案：<b>'+x.c+'</b>')+(x.exp?'<br>'+x.exp:'')+'</div>';
+ f+='<button class="btn" id="nx" style="width:100%">'+(last?'看結果':'下一題')+'</button>';
+ $('#fb').innerHTML=f;$('#nx').onclick=next;
+ if(x.listen&&x.say)say(x.say,x.lang);
+}
+function next(){S.i++;if(S.i>=S.list.length)return result();show()}
+function result(){
+ const n=S.list.length,ok=S.ok,m=S.meta;
+ if(m){const key=m.g+'|'+m.u;const pr=P().prog[key]||{best:0,plays:0};pr.plays++;if(ok>pr.best)pr.best=ok;P().prog[key]=pr;save()}
+ const s=ok>=n*.9?3:ok>=n*.7?2:ok>=n*.5?1:0;
+ const msg=['再接再厲，錯的題目已放進錯題本！','不錯喔，再練一次會更好！','很棒！快滿分了！','太厲害了！'][s];
+ let h='<div class="card center"><div class="big">'+['💪','🙂','🎉','🏆'][s]+'</div><h1>答對 '+ok+' / '+n+'</h1><div class="star" style="font-size:30px">'+ST(s)+'</div><p>'+msg+'</p>';
+ h+='<div class="row" style="justify-content:center"><button class="btn" id="ag">再來一回</button><button class="btn g" id="hm">回首頁</button></div></div>';
+ $('#app').innerHTML=h;
+ $('#hm').onclick=home;
+ $('#ag').onclick=()=>{if(m&&m.u!=='混合'){const g=m.g;const ui=BANK[g].units.findIndex(u=>u.n===m.u);start(sh(unitPool(g,ui)).slice(0,10),S.title,m)}else if(m){grade(m.g)}else home()};
+ S=null;
+}
+load();home();
+</script>
+</body>
+</html>
