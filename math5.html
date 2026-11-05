@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>數學 5上（南一）</title>
+<style>
+:root{--bg:#f4f7fb;--card:#fff;--tx:#1d2733;--mut:#6b7785;--pri:#2f6fed;--ok:#1f9d55;--no:#d64545;--ln:#dde3ec;--acc:#2f6fed}
+@media(prefers-color-scheme:dark){:root{--bg:#141a22;--card:#1f2833;--tx:#e8eef5;--mut:#93a0ae;--ln:#33404f}}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.6 "PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif}
+#app{max-width:640px;margin:0 auto;padding:14px 14px 40px}
+h1{font-size:22px;margin:6px 0 2px}h2{font-size:18px;margin:14px 0 8px}
+.sub{color:var(--mut);font-size:14px;margin:0 0 10px}
+.card{background:var(--card);border:1px solid var(--ln);border-radius:14px;padding:14px;margin:10px 0}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+button,select,input{font:inherit;color:inherit}
+.btn{border:0;border-radius:12px;padding:12px 14px;background:var(--pri);color:#fff;font-weight:700;cursor:pointer}
+.btn.g{background:var(--card);color:var(--tx);border:1px solid var(--ln)}
+.btn.s{padding:6px 10px;font-size:14px;border-radius:9px}
+.gb{padding:18px 6px;font-size:20px;border-radius:14px;border:2px solid var(--acc);background:var(--card);color:var(--tx);font-weight:800;cursor:pointer}
+.gb small{display:block;font-size:12px;color:var(--mut);font-weight:400}
+.gb.off{opacity:.35;cursor:default;border-color:var(--ln)}
+.unit{display:flex;justify-content:space-between;align-items:center;width:100%;text-align:left;padding:13px 14px;margin:8px 0;border-radius:12px;border:1px solid var(--ln);background:var(--card);cursor:pointer}
+.unit b{font-size:16px}.unit span{color:var(--mut);font-size:13px}
+.star{color:#f2a900;letter-spacing:2px;white-space:nowrap}
+.bar{height:8px;background:var(--ln);border-radius:6px;overflow:hidden;margin:6px 0 14px}.bar i{display:block;height:100%;background:var(--acc);transition:width .3s}
+.q{font-size:21px;font-weight:700;line-height:1.6;margin:6px 0 14px;white-space:pre-wrap}
+.q ruby{ruby-position:over}.q rt{font-size:.5em;font-weight:400}
+.opt{display:block;width:100%;text-align:left;margin:8px 0;padding:14px;border-radius:12px;border:2px solid var(--ln);background:var(--card);font-size:18px;cursor:pointer}
+.opt.ok{border-color:var(--ok);background:rgba(31,157,85,.14)}.opt.no{border-color:var(--no);background:rgba(214,69,69,.14)}
+.fb{margin:10px 0;padding:10px 12px;border-radius:10px;font-size:15px}
+.fb.ok{background:rgba(31,157,85,.14)}.fb.no{background:rgba(214,69,69,.14)}
+.top{display:flex;justify-content:space-between;align-items:center}
+.big{font-size:56px;text-align:center;margin:6px 0}.center{text-align:center}
+.nav{font-size:13px;color:var(--mut);margin-top:18px;line-height:2}.nav a{color:var(--pri);margin-right:10px;text-decoration:none}
+.sp{flex:1}
+input[type=text]{padding:9px 10px;border-radius:9px;border:1px solid var(--ln);background:var(--card);width:130px}
+select{padding:9px 10px;border-radius:9px;border:1px solid var(--ln);background:var(--card)}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+const CFG={"key": "kids-math5-v1", "title": "數學 5上（南一）", "name": "數學 5上", "sub": "南一版 五年級上學期：依課綱重點分單元練習（題目由程式產生並驗算）", "lang": "zh-TW", "ver": {"5": "南一 5上"}, "autoRead": false, "autoMax": 0, "nav": [["數學", "./"], ["國語", "chinese.html"], ["英語", "english.html"], ["自然", "science.html"], ["社會", "social.html"], ["生活", "life.html"]], "hideOff": true, "note": "題目依年級學習重點原創編寫，未逐課對照課本；進度只存在這支手機/平板的瀏覽器，可用「匯出進度」備份。"};
+const BANK={"5":{"note":"南一 5上：依課綱重點分單元（因數倍數、小數乘法、分數加減、面積、四則運算）；單元順序未逐課對照目次","units":[{"n":"因數與倍數","qs":[["12 的因數有幾個？","6","7~5~8","12 的因數有：1、2、3、4、6、12"],["18 的因數有幾個？","6","7~5~8","18 的因數有：1、2、3、6、9、18"],["20 的因數有幾個？","6","7~5~8","20 的因數有：1、2、4、5、10、20"],["24 的因數有幾個？","8","9~7~10","24 的因數有：1、2、3、4、6、8、12、24"],["28 的因數有幾個？","6","7~5~8","28 的因數有：1、2、4、7、14、28"],["30 的因數有幾個？","8","9~7~10","30 的因數有：1、2、3、5、6、10、15、30"],["36 的因數有幾個？","9","10~8~11","36 的因數有：1、2、3、4、6、9、12、18、36"],["40 的因數有幾個？","8","9~7~10","40 的因數有：1、2、4、5、8、10、20、40"],["45 的因數有幾個？","6","7~5~8","45 的因數有：1、3、5、9、15、45"],["48 的因數有幾個？","10","11~9~12","48 的因數有：1、2、3、4、6、8、12、16、24、48"],["12 和 18 的最大公因數是多少？","6","12~8~36","12 的因數有 1、2、3、4、6、12；18 的因數有 1、2、3、6、9、18"],["18 和 24 的最大公因數是多少？","6","12~8~72","18 的因數有 1、2、3、6、9、18；24 的因數有 1、2、3、4、6、8、12、24"],["20 和 30 的最大公因數是多少？","10","20~12~60","20 的因數有 1、2、4、5、10、20；30 的因數有 1、2、3、5、6、10、15、30"],["16 和 24 的最大公因數是多少？","8","16~10~48","16 的因數有 1、2、4、8、16；24 的因數有 1、2、3、4、6、8、12、24"],["24 和 36 的最大公因數是多少？","12","24~14~72","24 的因數有 1、2、3、4、6、8、12、24；36 的因數有 1、2、3、4、6、9、12、18、36"],["15 和 25 的最大公因數是多少？","5","10~7~75","15 的因數有 1、3、5、15；25 的因數有 1、5、25"],["28 和 42 的最大公因數是多少？","14","28~16~84","28 的因數有 1、2、4、7、14、28；42 的因數有 1、2、3、6、7、14、21、42"],["30 和 45 的最大公因數是多少？","15","30~17~90","30 的因數有 1、2、3、5、6、10、15、30；45 的因數有 1、3、5、9、15、45"],["4 和 6 的最小公倍數是多少？","12","24~16~13","4 的倍數：4、8、12、16…"],["6 和 8 的最小公倍數是多少？","24","48~30~25","6 的倍數：6、12、18、24…"],["6 和 9 的最小公倍數是多少？","18","54~24~36","6 的倍數：6、12、18、24…"],["8 和 12 的最小公倍數是多少？","24","96~32~48","8 的倍數：8、16、24、32…"],["10 和 15 的最小公倍數是多少？","30","150~40~60","10 的倍數：10、20、30、40…"],["12 和 18 的最小公倍數是多少？","36","216~48~72","12 的倍數：12、24、36、48…"],["9 和 12 的最小公倍數是多少？","36","108~45~72","9 的倍數：9、18、27、36…"],["5 和 7 的最小公倍數是多少？","35","40~70~36","5 的倍數：5、10、15、20…"],["下列哪一個數是質數？","13","15~21~27","質數只有 1 和它自己兩個因數。"],["下列哪一個數是質數？","17","9~25~33"],["下列哪一個數是質數？","23","21~39~51"],["下列哪一個數是合數？","27","11~13~19","27 除了 1 和 27，還有 3 和 9 也是因數。"],["下列哪一個數既不是質數，也不是合數？","1","2~3~9","1 只有一個因數。"],["2 是質數嗎？下列哪一個說法正確？","是，而且是唯一的偶質數","不是，因為是偶數~是，但還有其他偶質數~不是，因為只有一個因數"],["下列哪一個數是 3 的倍數？","123","124~125~127","各位數字相加 1+2+3=6，是 3 的倍數。"],["下列哪一個數是 3 的倍數？","252","251~253~254","2+5+2=9，是 3 的倍數。"],["下列哪一個數是 9 的倍數？","468","467~469~470","4+6+8=18，是 9 的倍數。"],["下列哪一個數是 5 的倍數？","135","132~134~138","個位是 0 或 5 的數是 5 的倍數。"],["下列哪一個數是 2 的倍數？","346","345~347~349"],["1 到 100 之間，6 的倍數有幾個？","16","17~15~18","100 ÷ 6 = 16…4"],["1 到 100 之間，7 的倍數有幾個？","14","15~13~16","100 ÷ 7 = 14…2"],["1 到 100 之間，8 的倍數有幾個？","12","13~11~14","100 ÷ 8 = 12…4"],["1 到 100 之間，9 的倍數有幾個？","11","12~10~13","100 ÷ 9 = 11…1"],["任何數都是 1 的倍數。","○","任何整數都是 1 的倍數。"],["一個數的因數一定比它自己小或等於它自己。","○"],["一個數的倍數有無限多個。","○"],["最小公倍數一定比兩個數都小。","✕","最小公倍數至少和較大的數一樣大。"],["最大公因數一定比兩個數都大。","✕","最大公因數不會比較小的數還大。"]]},{"n":"小數的乘法","qs":[["1.4 × 3 ＝ ？","4.2","42~0.42~420","先當成整數算，再依小數位數補上小數點：1.4 有 1 位小數，3 有 0 位小數。"],["2.5 × 4 ＝ ？","10","100~1~1000","先當成整數算，再依小數位數補上小數點：2.5 有 1 位小數，4 有 0 位小數。"],["3.6 × 5 ＝ ？","18","180~1.8~1800","先當成整數算，再依小數位數補上小數點：3.6 有 1 位小數，5 有 0 位小數。"],["4.8 × 6 ＝ ？","28.8","288~2.88~2880","先當成整數算，再依小數位數補上小數點：4.8 有 1 位小數，6 有 0 位小數。"],["1.25 × 4 ＝ ？","5","50~0.5~500","先當成整數算，再依小數位數補上小數點：1.25 有 2 位小數，4 有 0 位小數。"],["2.05 × 3 ＝ ？","6.15","61.5~0.615~615","先當成整數算，再依小數位數補上小數點：2.05 有 2 位小數，3 有 0 位小數。"],["7.5 × 8 ＝ ？","60","600~6~6000","先當成整數算，再依小數位數補上小數點：7.5 有 1 位小數，8 有 0 位小數。"],["1.8 × 7 ＝ ？","12.6","126~1.26~1260","先當成整數算，再依小數位數補上小數點：1.8 有 1 位小數，7 有 0 位小數。"],["3.2 × 9 ＝ ？","28.8","288~2.88~2880","先當成整數算，再依小數位數補上小數點：3.2 有 1 位小數，9 有 0 位小數。"],["0.62 × 5 ＝ ？","3.1","31~0.31~310","先當成整數算，再依小數位數補上小數點：0.62 有 2 位小數，5 有 0 位小數。"],["1.2 × 0.3 ＝ ？","0.36","3.6~0.036~36","先當成整數算，再依小數位數補上小數點：1.2 有 1 位小數，0.3 有 1 位小數。"],["2.5 × 0.4 ＝ ？","1","10~0.1~100","先當成整數算，再依小數位數補上小數點：2.5 有 1 位小數，0.4 有 1 位小數。"],["1.5 × 1.5 ＝ ？","2.25","22.5~0.225~225","先當成整數算，再依小數位數補上小數點：1.5 有 1 位小數，1.5 有 1 位小數。"],["2.4 × 0.5 ＝ ？","1.2","12~0.12~120","先當成整數算，再依小數位數補上小數點：2.4 有 1 位小數，0.5 有 1 位小數。"],["3.5 × 1.2 ＝ ？","4.2","42~0.42~420","先當成整數算，再依小數位數補上小數點：3.5 有 1 位小數，1.2 有 1 位小數。"],["0.6 × 0.08 ＝ ？","0.048","0.48~0.0048~4.8","先當成整數算，再依小數位數補上小數點：0.6 有 1 位小數，0.08 有 2 位小數。"],["1.25 × 0.4 ＝ ？","0.5","5~0.05~50","先當成整數算，再依小數位數補上小數點：1.25 有 2 位小數，0.4 有 1 位小數。"],["0.18 × 2.5 ＝ ？","0.45","4.5~0.045~45","先當成整數算，再依小數位數補上小數點：0.18 有 2 位小數，2.5 有 1 位小數。"],["一枝筆 4.5 元，買 6 枝要多少元？","27 元","270 元~2.7 元~33 元","4.5 × 6 ＝ 27"],["一枝筆 12.5 元，買 4 枝要多少元？","50 元","500 元~5 元~54 元","12.5 × 4 ＝ 50"],["一枝筆 8.25 元，買 4 枝要多少元？","33 元","330 元~3.3 元~37 元","8.25 × 4 ＝ 33"],["一枝筆 3.6 元，買 5 枝要多少元？","18 元","180 元~1.8 元~23 元","3.6 × 5 ＝ 18"],["長方形長 2.5 公尺、寬 1.2 公尺，面積是多少平方公尺？","3 平方公尺","30 平方公尺~7.4 平方公尺~0.3 平方公尺","長 × 寬"],["長方形長 3.4 公尺、寬 2.5 公尺，面積是多少平方公尺？","8.5 平方公尺","85 平方公尺~11.8 平方公尺~0.85 平方公尺","長 × 寬"],["長方形長 1.8 公尺、寬 0.5 公尺，面積是多少平方公尺？","0.9 平方公尺","9 平方公尺~4.6 平方公尺~0.09 平方公尺","長 × 寬"],["0.3 × 0.4 的積是多少？","0.12","1.2~0.012~0.7","3 × 4 = 12，兩個一位小數，積有兩位小數。"],["0.5 × 0.5 的積是多少？","0.25","2.5~0.025~1.0"],["一個數乘以小於 1 的小數，積會怎樣？","比原來的數小","比原來的數大~一樣大~不一定","例如 10 × 0.5 = 5。"],["一個數（不是 0）乘以大於 1 的小數，積會怎樣？","比原來的數大","比原來的數小~一樣大~變成 0","例如 10 × 1.5 = 15。"],["3.5 × 2.4 的積有三位小數。","✕","3.5 有一位、2.4 有一位，共兩位小數，答案是 8.4。"],["0.6 × 0.7 的積是 0.42。","○"]]},{"n":"異分母分數的加減","qs":[["2/3 ＋ 1/2 ＝ ？","1又1/6","3/5~1又1/3~1/6","通分：分母的最小公倍數是 6。"],["1/2 ＋ 1/3 ＝ ？","5/6","2/5~1~1/6","通分：分母的最小公倍數是 6。"],["3/4 ＋ 1/6 ＝ ？","11/12","4/10~1~7/12","通分：分母的最小公倍數是 12。"],["2/5 ＋ 1/2 ＝ ？","9/10","3/7~1~1/10","通分：分母的最小公倍數是 10。"],["5/6 ＋ 1/4 ＝ ？","1又1/12","6/10~1又1/6~7/12","通分：分母的最小公倍數是 12。"],["3/8 ＋ 1/4 ＝ ？","5/8","4/12~3/4~1/8","通分：分母的最小公倍數是 8。"],["7/10 ＋ 1/5 ＝ ？","9/10","8/15~1~1/2","通分：分母的最小公倍數是 10。"],["1/4 ＋ 1/6 ＝ ？","5/12","2/10~1/2~1/12","通分：分母的最小公倍數是 12。"],["2/3 ＋ 3/4 ＝ ？","1又5/12","5/7~1又1/2~1/12","通分：分母的最小公倍數是 12。"],["5/12 ＋ 1/3 ＝ ？","3/4","6/15~5/6~1/12","通分：分母的最小公倍數是 12。"],["3/5 ＋ 1/4 ＝ ？","17/20","4/9~9/10~7/20","通分：分母的最小公倍數是 20。"],["4/9 ＋ 1/6 ＝ ？","11/18","5/15~2/3~5/18","通分：分母的最小公倍數是 18。"],["5/6 － 1/3 ＝ ？","1/2","4/3~1又1/6~2/3","通分：分母的最小公倍數是 6。"],["3/4 － 1/6 ＝ ？","7/12","2/2~11/12~2/3","通分：分母的最小公倍數是 12。"],["7/8 － 1/4 ＝ ？","5/8","6/4~1又1/8~3/4","通分：分母的最小公倍數是 8。"],["2/3 － 1/4 ＝ ？","5/12","1/1~11/12~1/2","通分：分母的最小公倍數是 12。"],["4/5 － 1/2 ＝ ？","3/10","3/3~1又3/10~2/5","通分：分母的最小公倍數是 10。"],["7/10 － 2/5 ＝ ？","3/10","5/5~1又1/10~2/5","通分：分母的最小公倍數是 10。"],["5/8 － 1/3 ＝ ？","7/24","4/5~23/24~1/3","通分：分母的最小公倍數是 24。"],["3/4 － 2/5 ＝ ？","7/20","1/1~1又3/20~2/5","通分：分母的最小公倍數是 20。"],["1/2 ＋ 2/3 ＝ ？","1又1/6","3/5~1又1/3~1/6","通分成 3/6 ＋ 4/6 ＝ 7/6 ＝ 1又1/6。"],["3/4 ＋ 5/6 ＝ ？","1又7/12","8/10~1又1/2~1又5/12","通分成 9/12 ＋ 10/12 ＝ 19/12 ＝ 1又7/12。"],["2 又 1/2 ＋ 1 又 1/3 ＝ ？","3又5/6","3又2/5~3又1/6~4又5/6","整數相加 3，分數 1/2 ＋ 1/3 ＝ 5/6。"],["3 又 3/4 － 1 又 1/2 ＝ ？","2又1/4","1又3/4~2又3/4~1又1/4","整數 3−1＝2，分數 3/4 − 2/4 ＝ 1/4。"],["下列哪一組分數可以通分成分母 12？","1/3 和 1/4","1/5 和 1/6~1/7 和 1/8~1/9 和 1/10","3 和 4 的最小公倍數是 12。"],["通分 2/3 和 3/4，最適合用的公分母是？","12","7~24~6","3 和 4 的最小公倍數是 12。"],["分母不同的分數，一定要先通分才能直接相加。","○"],["1/2 ＋ 1/3 ＝ 2/5。","✕","不能分子加分子、分母加分母，要先通分，答案是 5/6。"]]},{"n":"面積（平行四邊形、三角形、梯形）","qs":[["平行四邊形的底是 8 公分、高是 5 公分，面積是多少平方公分？","40 平方公分","20 平方公分~26 平方公分~48 平方公分","平行四邊形面積 ＝ 底 × 高"],["平行四邊形的底是 12 公分、高是 6 公分，面積是多少平方公分？","72 平方公分","36 平方公分~84 平方公分~73 平方公分","平行四邊形面積 ＝ 底 × 高"],["平行四邊形的底是 10 公分、高是 7 公分，面積是多少平方公分？","70 平方公分","35 平方公分~34 平方公分~80 平方公分","平行四邊形面積 ＝ 底 × 高"],["平行四邊形的底是 15 公分、高是 4 公分，面積是多少平方公分？","60 平方公分","30 平方公分~38 平方公分~75 平方公分","平行四邊形面積 ＝ 底 × 高"],["平行四邊形的底是 9 公分、高是 8 公分，面積是多少平方公分？","72 平方公分","36 平方公分~34 平方公分~81 平方公分","平行四邊形面積 ＝ 底 × 高"],["平行四邊形的底是 14 公分、高是 5 公分，面積是多少平方公分？","70 平方公分","35 平方公分~38 平方公分~84 平方公分","平行四邊形面積 ＝ 底 × 高"],["三角形的底是 8 公分、高是 6 公分，面積是多少平方公分？","24 平方公分","48 平方公分~14 平方公分~30 平方公分","三角形面積 ＝ 底 × 高 ÷ 2"],["三角形的底是 10 公分、高是 7 公分，面積是多少平方公分？","35 平方公分","70 平方公分~17 平方公分~42 平方公分","三角形面積 ＝ 底 × 高 ÷ 2"],["三角形的底是 12 公分、高是 5 公分，面積是多少平方公分？","30 平方公分","60 平方公分~17 平方公分~35 平方公分","三角形面積 ＝ 底 × 高 ÷ 2"],["三角形的底是 14 公分、高是 8 公分，面積是多少平方公分？","56 平方公分","112 平方公分~22 平方公分~64 平方公分","三角形面積 ＝ 底 × 高 ÷ 2"],["三角形的底是 9 公分、高是 6 公分，面積是多少平方公分？","27 平方公分","54 平方公分~15 平方公分~33 平方公分","三角形面積 ＝ 底 × 高 ÷ 2"],["三角形的底是 16 公分、高是 5 公分，面積是多少平方公分？","40 平方公分","80 平方公分~21 平方公分~45 平方公分","三角形面積 ＝ 底 × 高 ÷ 2"],["梯形的上底是 4 公分、下底是 6 公分、高是 5 公分，面積是多少平方公分？","25 平方公分","50 平方公分~60 平方公分~29 平方公分","梯形面積 ＝（上底 ＋ 下底）× 高 ÷ 2"],["梯形的上底是 3 公分、下底是 7 公分、高是 4 公分，面積是多少平方公分？","20 平方公分","40 平方公分~42 平方公分~23 平方公分","梯形面積 ＝（上底 ＋ 下底）× 高 ÷ 2"],["梯形的上底是 5 公分、下底是 9 公分、高是 6 公分，面積是多少平方公分？","42 平方公分","84 平方公分~135 平方公分~47 平方公分","梯形面積 ＝（上底 ＋ 下底）× 高 ÷ 2"],["梯形的上底是 6 公分、下底是 10 公分、高是 8 公分，面積是多少平方公分？","64 平方公分","128 平方公分~240 平方公分~70 平方公分","梯形面積 ＝（上底 ＋ 下底）× 高 ÷ 2"],["梯形的上底是 8 公分、下底是 12 公分、高是 5 公分，面積是多少平方公分？","50 平方公分","100 平方公分~240 平方公分~58 平方公分","梯形面積 ＝（上底 ＋ 下底）× 高 ÷ 2"],["梯形的上底是 7 公分、下底是 11 公分、高是 6 公分，面積是多少平方公分？","54 平方公分","108 平方公分~231 平方公分~61 平方公分","梯形面積 ＝（上底 ＋ 下底）× 高 ÷ 2"],["平行四邊形的面積是 48 平方公分、底是 8 公分，高是幾公分？","6 公分","40 公分~12 公分~14 公分","高 ＝ 面積 ÷ 底 ＝ 48 ÷ 8"],["平行四邊形的面積是 60 平方公分、底是 12 公分，高是幾公分？","5 公分","48 公分~10 公分~17 公分","高 ＝ 面積 ÷ 底 ＝ 60 ÷ 12"],["平行四邊形的面積是 72 平方公分、底是 9 公分，高是幾公分？","8 公分","63 公分~16 公分~17 公分","高 ＝ 面積 ÷ 底 ＝ 72 ÷ 9"],["平行四邊形的面積是 90 平方公分、底是 15 公分，高是幾公分？","6 公分","75 公分~12 公分~21 公分","高 ＝ 面積 ÷ 底 ＝ 90 ÷ 15"],["三角形的面積是 24 平方公分、底是 6 公分，高是幾公分？","8 公分","4 公分~16 公分~14 公分","高 ＝ 面積 × 2 ÷ 底 ＝ 24 × 2 ÷ 6"],["三角形的面積是 40 平方公分、底是 10 公分，高是幾公分？","8 公分","4 公分~16 公分~18 公分","高 ＝ 面積 × 2 ÷ 底 ＝ 40 × 2 ÷ 10"],["三角形的面積是 36 平方公分、底是 9 公分，高是幾公分？","8 公分","4 公分~16 公分~17 公分","高 ＝ 面積 × 2 ÷ 底 ＝ 36 × 2 ÷ 9"],["兩個完全一樣的三角形，可以拼成什麼圖形？","平行四邊形","圓形~梯形~正方形","所以三角形面積是平行四邊形面積的一半。"],["把平行四邊形沿著高剪開再拼，可以變成哪一種圖形？","長方形","三角形~圓形~梯形","面積不變，所以平行四邊形面積 ＝ 底 × 高。"],["底相同、高相同的平行四邊形和三角形，面積關係是？","平行四邊形是三角形的 2 倍","一樣大~三角形是平行四邊形的 2 倍~平行四邊形是三角形的 3 倍"],["平行四邊形的高，是指兩條平行邊之間的垂直距離。","○"],["三角形面積公式是 底 × 高。","✕","要再除以 2。"],["梯形的面積要用上底加下底的和來計算。","○"]]},{"n":"整數四則運算","qs":[["8 ＋ 6 × 3 ＝ ？","26","31~23~52","先算括號，再算乘除，最後算加減。"],["20 － 4 × 3 ＝ ？","8","13~5~16","先算括號，再算乘除，最後算加減。"],["36 ÷ 4 ＋ 5 ＝ ？","14","19~11~28","先算括號，再算乘除，最後算加減。"],["(8 ＋ 6) × 3 ＝ ？","42","47~39~84","先算括號，再算乘除，最後算加減。"],["45 － 15 ÷ 3 ＝ ？","40","45~37~80","先算括號，再算乘除，最後算加減。"],["(20 － 4) × 3 ＝ ？","48","53~45~96","先算括號，再算乘除，最後算加減。"],["7 × 4 － 9 ＝ ？","19","24~16~38","先算括號，再算乘除，最後算加減。"],["60 ÷ (5 ＋ 7) ＝ ？","5","10~2~6","先算括號，再算乘除，最後算加減。"],["12 ＋ 18 ÷ 6 － 2 ＝ ？","13","18~10~26","先算括號，再算乘除，最後算加減。"],["(30 － 6) ÷ 4 ＋ 3 ＝ ？","9","14~6~18","先算括號，再算乘除，最後算加減。"],["算式有括號時，應該先算什麼？","括號裡面","乘法~加法~從左到右都一樣"],["沒有括號的算式，下列哪一個運算要先算？","乘法和除法","加法和減法~從右邊開始~最小的數"],["小明有 50 元，買 3 枝筆每枝 8 元，還剩多少元？","26 元","34 元~42 元~24 元","50 － 3 × 8 ＝ 50 － 24 ＝ 26"],["一箱有 12 瓶飲料，買 4 箱，喝掉 15 瓶，還剩多少瓶？","33 瓶","48 瓶~63 瓶~27 瓶","12 × 4 － 15 ＝ 33"],["7 ＋ 3 × 2 ＝ 20。","✕","先乘後加：7 ＋ 6 ＝ 13。"],["(7 ＋ 3) × 2 ＝ 20。","○"]]}]}};
+const $=s=>document.querySelector(s);
+const ST=n=>'★'.repeat(n)+'☆'.repeat(3-n);
+function sh(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a}
+/* ---------- 儲存 ---------- */
+let DB;
+function load(){try{DB=JSON.parse(localStorage.getItem(CFG.key))}catch(e){DB=null}
+ if(!DB||!DB.profiles)DB={cur:'小朋友',auto:true,profiles:{'小朋友':{prog:{},wrong:[],total:0}}};}
+function save(){try{localStorage.setItem(CFG.key,JSON.stringify(DB))}catch(e){}}
+const P=()=>DB.profiles[DB.cur];
+/* ---------- 朗讀 ---------- */
+function say(t,l){try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(String(t).replace(/<[^>]+>/g,''));u.lang=l||CFG.lang;u.rate=.85;speechSynthesis.speak(u)}catch(e){}}
+/* ---------- 題目產生 ---------- */
+function enOnly(t){if(CFG.lang!=='en-US')return t;const s=t.replace(/[\u2E80-\u9FFF\uFF00-\uFFEF\u3000-\u303F]/g,' ').replace(/\s+/g,' ').trim();return /[A-Za-z]{2,}/.test(s)||/^[A-Za-z]$/.test(s)?s:''}
+function mkItem(it,g,u){
+ if(it[1]==='○'||it[1]==='✕')return{q:it[0],c:it[1]==='○'?'○ 對':'✕ 錯',w:[it[1]==='○'?'✕ 錯':'○ 對'],tf:1,exp:it[2]||'',g,u,say:enOnly(it[0]),lang:CFG.lang};
+ return{q:it[0],c:it[1],w:it[2].split('~'),exp:it[3]||'',g,u,say:enOnly(it[0]),lang:CFG.lang};}
+function pick(arr,n,ex){const o=[];for(const x of sh(arr)){if(x!==ex&&!o.includes(x))o.push(x);if(o.length>=n)break}return o}
+function genPairs(pp,g,u){
+ const out=[];const items=pp.items;
+ for(const it of items){
+  const dirs=['f'];if(pp.r)dirs.push('r');if(pp.l)dirs.push('l');
+  const d=dirs[Math.random()*dirs.length|0];
+  const A=it[0],B=it[1],ex=it[2]||'';
+  if(d==='f'){out.push({q:pp.f.replace('{a}',A).replace('{b}',B),c:B,w:pick(items.map(x=>x[1]),3,B),exp:ex||(A+' = '+B),g,u,say:A,lang:pp.lang||CFG.lang})}
+  else if(d==='r'){out.push({q:pp.r.replace('{a}',A).replace('{b}',B),c:A,w:pick(items.map(x=>x[0]),3,A),exp:ex||(A+' = '+B),g,u,say:CFG.lang==='en-US'?'':B,lang:CFG.lang})}
+  else{out.push({q:'🔊 聽聽看，這是哪個單字？',c:A,w:pick(items.map(x=>x[0]),3,A),exp:A+' = '+B,g,u,say:A,lang:pp.lang||CFG.lang,listen:1})}
+ }return out;}
+function unitPool(g,ui){const u=BANK[g].units[ui];let p=(u.qs||[]).map(it=>mkItem(it,g,u.n));if(u.pairs)p=p.concat(genPairs(u.pairs,g,u.n));return p}
+function inst(x){const o=x.tf?['○ 對','✕ 錯']:sh([x.c,...x.w]);return Object.assign({},x,{opts:o,a:o.indexOf(x.c)})}
+/* ---------- 狀態 ---------- */
+let S=null;
+/* ---------- 畫面 ---------- */
+function navHtml(){return '<div class="nav">其他科目：'+CFG.nav.map(n=>'<a href="'+n[1]+'">'+n[0]+'</a>').join('')+'</div>'}
+function home(){
+ S=null;const names=Object.keys(DB.profiles);
+ let h='<h1>'+CFG.title+'</h1><p class="sub">'+CFG.sub+'</p>';
+ h+='<div class="card"><div class="row"><span>👤</span><select id="pf">'+names.map(n=>'<option'+(n===DB.cur?' selected':'')+'>'+n+'</option>').join('')+'</select><button class="btn g s" id="addp">＋新增小朋友</button><span class="sp"></span><span class="star">累積答對 '+P().total+' 題</span></div></div>';
+ h+='<h2>選擇年級</h2><div class="grid">';
+ for(let g=1;g<=6;g++){const ok=!!BANK[g];if(!ok&&CFG.hideOff)continue;h+='<button class="gb'+(ok?'':' off')+'" data-g="'+g+'">'+g+' 年級<small>'+(ok?CFG.ver[g]||'':'—')+'</small></button>'}
+ h+='</div>';
+ const wn=P().wrong.length;
+ if(wn)h+='<div class="card row"><b>📝 錯題本：'+wn+' 題</b><span class="sp"></span><button class="btn s" id="wr">重練錯題</button></div>';
+ h+='<div class="card"><div class="row"><label><input type="checkbox" id="auto"'+(DB.auto?' checked':'')+'> 低年級自動朗讀題目</label></div><div class="row" style="margin-top:10px"><button class="btn g s" id="ex">匯出進度</button><button class="btn g s" id="im">匯入進度</button><button class="btn g s" id="rs">清除這位進度</button><input type="file" id="fi" accept=".json" style="display:none"></div></div>';
+ h+='<p class="sub">'+CFG.note+'</p>'+navHtml();
+ $('#app').innerHTML=h;
+ $('#pf').onchange=e=>{DB.cur=e.target.value;save();home()};
+ $('#addp').onclick=()=>{const n=(prompt('小朋友的名字：')||'').trim();if(!n)return;if(!DB.profiles[n])DB.profiles[n]={prog:{},wrong:[],total:0};DB.cur=n;save();home()};
+ document.querySelectorAll('.gb').forEach(b=>b.onclick=()=>{if(BANK[+b.dataset.g])grade(+b.dataset.g)});
+ const w=$('#wr');if(w)w.onclick=()=>start(sh(P().wrong).slice(0,10),'錯題重練',null);
+ $('#auto').onchange=e=>{DB.auto=e.target.checked;save()};
+ $('#ex').onclick=()=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(DB)],{type:'application/json'}));a.download=CFG.key+'-backup.json';a.click()};
+ $('#im').onclick=()=>$('#fi').click();
+ $('#fi').onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);if(!d.profiles)throw 0;DB=d;save();home();alert('匯入完成')}catch(x){alert('檔案格式不正確')}};r.readAsText(f)};
+ $('#rs').onclick=()=>{if(confirm('確定清除「'+DB.cur+'」的所有進度？')){DB.profiles[DB.cur]={prog:{},wrong:[],total:0};save();home()}};
+}
+function grade(g){
+ S=null;const B=BANK[g];
+ let h='<div class="top"><button class="btn g s" id="bk">← 返回</button><span class="star">'+DB.cur+'</span></div><h1>'+g+' 年級 '+CFG.name+'</h1><p class="sub">'+(B.note||'')+'</p>';
+ B.units.forEach((u,i)=>{const pr=P().prog[g+'|'+u.n];const b=pr?pr.best:0;const n=unitPool(g,i).length;
+  h+='<button class="unit" data-i="'+i+'"><div><b>'+u.n+'</b><br><span>'+n+' 題'+(pr?'・玩過 '+pr.plays+' 次':'')+'</span></div><span class="star">'+ST(b>=9?3:b>=7?2:b>=5?1:0)+'</span></button>'});
+ h+='<button class="unit" data-i="-1"><div><b>🎲 全部混合</b><br><span>從所有單元隨機抽 10 題</span></div></button>'+navHtml();
+ $('#app').innerHTML=h;$('#bk').onclick=home;
+ document.querySelectorAll('.unit').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;
+  if(i<0){let all=[];B.units.forEach((u,k)=>all=all.concat(unitPool(g,k)));start(sh(all).slice(0,10),g+' 年級 混合',{g,u:'混合'})}
+  else start(sh(unitPool(g,i)).slice(0,10),B.units[i].n,{g,u:B.units[i].n})});
+}
+function start(pool,title,meta){
+ if(!pool.length){alert('沒有題目');return home()}
+ S={list:pool.map(inst),i:0,ok:0,title,meta,done:false};show();
+}
+function show(){
+ const x=S.list[S.i];S.done=false;
+ let h='<div class="top"><button class="btn g s" id="bk">← 離開</button><span class="sub" style="margin:0">'+S.title+'　'+(S.i+1)+' / '+S.list.length+'</span></div>';
+ h+='<div class="bar"><i style="width:'+(S.i/S.list.length*100)+'%"></i></div><div class="card"><div class="q" id="qt">'+x.q+'</div>';
+ if(x.say)h+='<div class="row" style="margin-bottom:6px"><button class="btn g s" id="sp">🔊 朗讀</button></div>';
+ x.opts.forEach((o,k)=>h+='<button class="opt" data-k="'+k+'">'+o+'</button>');
+ h+='<div id="fb"></div></div>';
+ $('#app').innerHTML=h;
+ $('#bk').onclick=()=>{if(confirm('離開這回練習？'))home()};
+ if($('#sp'))$('#sp').onclick=()=>say(x.say,x.lang);
+ document.querySelectorAll('.opt').forEach(b=>b.onclick=()=>ans(+b.dataset.k));
+ if(x.say&&(x.listen||(DB.auto&&CFG.autoRead&&x.g<=CFG.autoMax)))setTimeout(()=>say(x.say,x.lang),250);
+}
+function ans(k){
+ if(S.done)return;S.done=true;const x=S.list[S.i];const right=k===x.a;
+ document.querySelectorAll('.opt').forEach((b,j)=>{if(j===x.a)b.classList.add('ok');else if(j===k)b.classList.add('no')});
+ const p=P();const key=x.q+'|'+x.c;
+ if(right){S.ok++;p.total++;p.wrong=p.wrong.filter(w=>w.q+'|'+w.c!==key)}
+ else if(!p.wrong.some(w=>w.q+'|'+w.c===key)){p.wrong.push({q:x.q,c:x.c,w:x.w,exp:x.exp,g:x.g,u:x.u,tf:x.tf,say:x.say,lang:x.lang,listen:x.listen});if(p.wrong.length>80)p.wrong.shift()}
+ save();
+ const last=S.i===S.list.length-1;
+ let f='<div class="fb '+(right?'ok':'no')+'">'+(right?'✅ 答對了！':'❌ 正確答案：<b>'+x.c+'</b>')+(x.exp?'<br>'+x.exp:'')+'</div>';
+ f+='<button class="btn" id="nx" style="width:100%">'+(last?'看結果':'下一題')+'</button>';
+ $('#fb').innerHTML=f;$('#nx').onclick=next;
+ if(x.listen&&x.say)say(x.say,x.lang);
+}
+function next(){S.i++;if(S.i>=S.list.length)return result();show()}
+function result(){
+ const n=S.list.length,ok=S.ok,m=S.meta;
+ if(m){const key=m.g+'|'+m.u;const pr=P().prog[key]||{best:0,plays:0};pr.plays++;if(ok>pr.best)pr.best=ok;P().prog[key]=pr;save()}
+ const s=ok>=n*.9?3:ok>=n*.7?2:ok>=n*.5?1:0;
+ const msg=['再接再厲，錯的題目已放進錯題本！','不錯喔，再練一次會更好！','很棒！快滿分了！','太厲害了！'][s];
+ let h='<div class="card center"><div class="big">'+['💪','🙂','🎉','🏆'][s]+'</div><h1>答對 '+ok+' / '+n+'</h1><div class="star" style="font-size:30px">'+ST(s)+'</div><p>'+msg+'</p>';
+ h+='<div class="row" style="justify-content:center"><button class="btn" id="ag">再來一回</button><button class="btn g" id="hm">回首頁</button></div></div>';
+ $('#app').innerHTML=h;
+ $('#hm').onclick=home;
+ $('#ag').onclick=()=>{if(m&&m.u!=='混合'){const g=m.g;const ui=BANK[g].units.findIndex(u=>u.n===m.u);start(sh(unitPool(g,ui)).slice(0,10),S.title,m)}else if(m){grade(m.g)}else home()};
+ S=null;
+}
+load();home();
+</script>
+</body>
+</html>
